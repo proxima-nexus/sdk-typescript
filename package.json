@@ -1,0 +1,56 @@
+{
+  "name": "@proxima-nexus/sdk-typescript",
+  "version": "1.0.0",
+  "description": "TypeScript SDK for Proxima Nexus Data Plane API",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "generate": "ts-node scripts/generate-sdk.ts",
+    "build": "tsc",
+    "test": "jest",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "proxima-nexus",
+    "sdk",
+    "typescript",
+    "api-client",
+    "rest-api",
+    "openapi"
+  ],
+  "author": "Proxima Nexus",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/proxima-nexus/sdk-typescript.git"
+  },
+  "bugs": {
+    "url": "https://github.com/proxima-nexus/sdk-typescript/issues"
+  },
+  "homepage": "https://github.com/proxima-nexus/sdk-typescript#readme",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "dependencies": {
+    "axios": "^1.6.0"
+  },
+  "devDependencies": {
+    "@openapitools/openapi-generator-cli": "^2.7.0",
+    "@proxima-nexus/openapi": "^1.0.0",
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.3",
+    "ts-node": "^10.9.2"
+  },
+  "peerDependencies": {
+    "axios": "^1.0.0"
+  },
+  "engines": {
+    "node": ">=18.x"
+  }
+}
