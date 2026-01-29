@@ -2,6 +2,8 @@
 
 TypeScript SDK for the Proxima Nexus Data Plane API.
 
+> **Note:** This SDK version 2.0.0 includes breaking changes. See the [CHANGELOG.md](./CHANGELOG.md) for migration details.
+
 ## Installation
 
 ```bash
@@ -29,88 +31,88 @@ async function main() {
   try {
     // Create a user
     const createResponse = await client.users.create({
-      createUserDto: {
-        userId: 'user-123',
-        displayName: 'John Doe',
-        requesterUserId: 'requester-123',
-        visibility: 'public',
-        gender: 'male',
-        birthDate: '1990-01-01',
-        location: {
-          latitude: 40.7128,
-          longitude: -74.006,
-          name: 'New York, NY'
-        }
-      },
+      userId: 'user-123',
+      displayName: 'John Doe',
+      visibility: 'public',
+      gender: 'male',
+      birthDate: '1990-01-01',
+      location: {
+        latitude: 40.7128,
+        longitude: -74.006,
+        name: 'New York, NY'
+      }
     });
     console.log('Created user:', createResponse.data);
 
     // Search users
-    const searchResponse = await client.users.search({
-      displayName: 'John',
-      latitude: 40.7128,
-      longitude: -74.006,
-      radius: 5000,
-      limit: 10,
-    });
+    const searchResponse = await client.users.search(
+      'John', // displayName
+      40.7128, // latitude
+      -74.006, // longitude
+      5000, // radius
+      undefined, // minLatitude
+      undefined, // maxLatitude
+      undefined, // minLongitude
+      undefined, // maxLongitude
+      10, // limit
+      'requester-123' // xProximaNexusRequesterUserId (optional)
+    );
     console.log('Found users:', searchResponse.data);
 
     // Get user by ID
-    const user = await client.users.findOne({
-      userId: 'user-123',
-    });
+    const user = await client.users.get('user-123', 'requester-123');
     console.log('User details:', user.data);
 
     // Update a user
-    const updated = await client.users.update({
-      userId: 'user-123',
-      updateUserDto: {
-        requesterUserId: 'requester-123',
+    const updated = await client.users.update(
+      'user-123',
+      'requester-123',
+      {
         displayName: 'John Smith',
         gender: 'male',
         birthDate: '1990-01-01',
-      },
-    });
+      }
+    );
     console.log('Updated user:', updated.data);
 
     // Delete a user
-    await client.users.remove({
-      userId: 'user-123',
-    });
+    await client.users.remove('user-123', 'requester-123');
 
     // Get a batch of users
-    const batchUsers = await client.users.getBatch({
-      getUsersDto: {
-        userIds: ['user-1', 'user-2', 'user-3'],
-      },
-    });
+    const batchUsers = await client.users.getBatch(
+      { userIds: ['user-1', 'user-2', 'user-3'] },
+      'requester-123'
+    );
     console.log('Batch users:', batchUsers.data);
 
-    // Friend operations
-    const friends = await client.users.getFriends({
-      userId: 'user-123',
-    });
-    console.log('Friends:', friends.data);
+    // Connection operations
+    const connections = await client.users.getConnections(
+      'user-123',
+      undefined, // state filter (optional)
+      undefined, // type filter (optional)
+      'requester-123' // xProximaNexusRequesterUserId (optional)
+    );
+    console.log('Connections:', connections.data);
 
-    await client.users.addFriend({
-      userId: 'user-123',
-      friendUserId: 'friend-456',
-    });
+    await client.users.putConnection(
+      'user-123',
+      'friend-456',
+      'requester-123',
+      { type: 'friend' } // MutateUserConnectionDto
+    );
 
-    await client.users.removeFriend({
-      userId: 'user-123',
-      friendUserId: 'friend-456',
-    });
+    await client.users.deleteConnection(
+      'user-123',
+      'friend-456',
+      'friend', // type: 'friend' | 'blocked'
+      'requester-123'
+    );
 
     // Get user's groups and events
-    const groups = await client.users.getGroups({
-      userId: 'user-123',
-    });
+    const groups = await client.users.getGroups('user-123', 'requester-123');
     console.log('User groups:', groups.data);
 
-    const events = await client.users.getEvents({
-      userId: 'user-123',
-    });
+    const events = await client.users.getEvents('user-123', 'requester-123');
     console.log('User events:', events.data);
   } catch (error: any) {
     console.error('API Error:', error.message);
@@ -129,77 +131,84 @@ async function main() {
   try {
     // Create an event
     const event = await client.events.create({
-      createEventDto: {
-        eventId: 'event-123',
-        displayName: 'Tech Meetup',
-        requesterUserId: 'user-123',
-        visibility: 'public',
-        startTime: '2024-12-01T18:00:00Z',
-        endTime: '2024-12-01T22:00:00Z',
-        type: 'meetup',
-        location: {
-          latitude: 40.7128,
-          longitude: -74.006,
-          name: 'New York, NY'
-        },
-        description: 'Monthly tech meetup',
+      eventId: 'event-123',
+      displayName: 'Tech Meetup',
+      visibility: 'public',
+      startTime: '2024-12-01T18:00:00Z',
+      endTime: '2024-12-01T22:00:00Z',
+      type: 'meetup',
+      location: {
+        latitude: 40.7128,
+        longitude: -74.006,
+        name: 'New York, NY'
       },
+      description: 'Monthly tech meetup',
     });
     console.log('Created event:', event.data);
 
     // Search events
-    const events = await client.events.search({
-      displayName: 'Tech',
-      latitude: 40.7128,
-      longitude: -74.006,
-      radius: 10000,
-      limit: 50,
-    });
+    const events = await client.events.search(
+      'Tech', // displayName
+      40.7128, // latitude
+      -74.006, // longitude
+      10000, // radius
+      undefined, // minLatitude
+      undefined, // maxLatitude
+      undefined, // minLongitude
+      undefined, // maxLongitude
+      50, // limit
+      'user-123' // xProximaNexusRequesterUserId (optional)
+    );
     console.log('Found events:', events.data);
 
     // Get an event by ID
-    const eventDetails = await client.events.findOne({
-      eventId: 'event-123',
-    });
+    const eventDetails = await client.events.get('event-123', 'user-123');
     console.log('Event details:', eventDetails.data);
 
     // Update an event
-    const updatedEvent = await client.events.update({
-      eventId: 'event-123',
-      updateEventDto: {
-        requesterUserId: 'user-123',
+    const updatedEvent = await client.events.update(
+      'event-123',
+      'user-123',
+      {
         displayName: 'Tech Meetup 2024',
         startTime: '2024-12-01T18:00:00Z',
         endTime: '2024-12-01T23:00:00Z',
         type: 'meetup',
-      },
-    });
+      }
+    );
     console.log('Updated event:', updatedEvent.data);
 
     // Delete an event
-    await client.events.remove({
-      eventId: 'event-123',
-      requesterUserId: 'user-123',
-    });
+    await client.events.remove('event-123', 'user-123');
 
     // Get a batch of events
-    const batchEvents = await client.events.getBatch({
-      getEventsDto: {
-        eventIds: ['event-1', 'event-2', 'event-3'],
-      },
-    });
+    const batchEvents = await client.events.getBatch(
+      { eventIds: ['event-1', 'event-2', 'event-3'] },
+      'user-123'
+    );
     console.log('Batch events:', batchEvents.data);
 
-    // Attendee operations
-    const attendees = await client.events.getAttendees({
-      eventId: 'event-123',
-    });
-    console.log('Attendees:', attendees.data);
+    // Connection operations
+    const connections = await client.events.getConnections(
+      'event-123',
+      undefined, // type filter (optional)
+      'user-123' // xProximaNexusRequesterUserId (optional)
+    );
+    console.log('Connections:', connections.data);
 
-    await client.events.addAttendee({
-      eventId: 'event-123',
-      userId: 'user-456',
-    });
+    await client.events.addConnection(
+      'event-123',
+      'user-456',
+      'user-123',
+      { type: 'attendee' } // MutateEventEntityConnectionDto
+    );
+
+    await client.events.removeConnection(
+      'event-123',
+      'user-456',
+      'user-123',
+      { type: 'attendee' } // MutateEventEntityConnectionDto
+    );
   } catch (error: any) {
     console.error('API Error:', error.message);
     if (error.response) {
@@ -217,78 +226,79 @@ async function main() {
   try {
     // Create a group
     const group = await client.groups.create({
-      createGroupDto: {
-        groupId: 'group-123',
-        displayName: 'Music Lovers',
-        requesterUserId: 'user-123',
-        visibility: 'public',
-        type: 'club',
-        description: 'A group for music enthusiasts',
-      },
+      groupId: 'group-123',
+      displayName: 'Music Lovers',
+      visibility: 'public',
+      type: 'open', // enum: 'open' | 'request' | 'invite'
+      description: 'A group for music enthusiasts',
     });
     console.log('Created group:', group.data);
 
     // Search groups
-    const groups = await client.groups.search({
-      displayName: 'Music',
-      latitude: 40.7128,
-      longitude: -74.006,
-      radius: 5000,
-      limit: 100,
-    });
+    const groups = await client.groups.search(
+      'Music', // displayName
+      40.7128, // latitude
+      -74.006, // longitude
+      5000, // radius
+      undefined, // minLatitude
+      undefined, // maxLatitude
+      undefined, // minLongitude
+      undefined, // maxLongitude
+      100, // limit
+      'user-123' // xProximaNexusRequesterUserId (optional)
+    );
     console.log('Found groups:', groups.data);
 
     // Get a group by ID
-    const groupDetails = await client.groups.findOne({
-      groupId: 'group-123',
-    });
+    const groupDetails = await client.groups.get('group-123', 'user-123');
     console.log('Group details:', groupDetails.data);
 
     // Update a group
-    const updatedGroup = await client.groups.update({
-      groupId: 'group-123',
-      updateGroupDto: {
-        requesterUserId: 'user-123',
+    const updatedGroup = await client.groups.update(
+      'group-123',
+      'user-123',
+      {
         displayName: 'Music Enthusiasts',
-        type: 'club',
-      },
-    });
+        type: 'open',
+      }
+    );
     console.log('Updated group:', updatedGroup.data);
 
     // Delete a group
-    await client.groups.remove({
-      groupId: 'group-123',
-      requesterUserId: 'user-123',
-    });
+    await client.groups.remove('group-123', 'user-123');
 
     // Get a batch of groups
-    const batchGroups = await client.groups.getBatch({
-      getGroupsDto: {
-        groupIds: ['group-1', 'group-2', 'group-3'],
-      },
-    });
+    const batchGroups = await client.groups.getBatch(
+      { groupIds: ['group-1', 'group-2', 'group-3'] },
+      'user-123'
+    );
     console.log('Batch groups:', batchGroups.data);
 
-    // Member operations
-    const members = await client.groups.getMembers({
-      groupId: 'group-123',
-    });
-    console.log('Members:', members.data);
+    // Connection operations
+    const connections = await client.groups.getConnections(
+      'group-123',
+      undefined, // state filter (optional)
+      undefined, // type filter (optional)
+      'user-123' // xProximaNexusRequesterUserId (optional)
+    );
+    console.log('Connections:', connections.data);
 
-    await client.groups.addMember({
-      groupId: 'group-123',
-      userId: 'user-456',
-    });
+    await client.groups.addConnection(
+      'group-123',
+      'user-456',
+      'user-123',
+      { type: 'member' } // MutateGroupEntityConnectionDto
+    );
 
-    await client.groups.removeMember({
-      groupId: 'group-123',
-      userId: 'user-456',
-    });
+    await client.groups.removeConnection(
+      'group-123',
+      'user-456',
+      'user-123',
+      { type: 'member' } // MutateGroupEntityConnectionDto
+    );
 
     // Get group's events
-    const groupEvents = await client.groups.getEvents({
-      groupId: 'group-123',
-    });
+    const groupEvents = await client.groups.getEvents('group-123', 'user-123');
     console.log('Group events:', groupEvents.data);
   } catch (error: any) {
     console.error('API Error:', error.message);
@@ -299,6 +309,10 @@ async function main() {
   }
 }
 ```
+
+## Requester User ID
+
+In version 2.0.0, the requester user ID is passed as a method parameter (`xProximaNexusRequesterUserId`) rather than in request bodies. This parameter is optional for most operations but required for operations that modify entities (create, update, delete) or when accessing non-public entities.
 
 ## Configuration
 
