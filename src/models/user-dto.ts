@@ -15,6 +15,9 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
+import type { EntityConnectionDto } from './entity-connection-dto';
+// May contain unused imports in some cases
+// @ts-ignore
 import type { LocationDto } from './location-dto';
 
 export interface UserDto {
@@ -22,10 +25,6 @@ export interface UserDto {
      * Unique identifier for the entity
      */
     'entityId'?: string;
-    /**
-     * Tenant identifier the entity belongs to
-     */
-    'tenantId'?: string;
     /**
      * Display name of the entity
      */
@@ -54,6 +53,10 @@ export interface UserDto {
      * Required location information
      */
     'location'?: LocationDto;
+    /**
+     * Connection to the requester
+     */
+    'requesterConnection'?: EntityConnectionDto;
     /**
      * Gender
      */

@@ -19,10 +19,6 @@ import type { LocationDto } from './location-dto';
 
 export interface UpdateGroupDto {
     /**
-     * User ID of the requester
-     */
-    'requesterUserId': string;
-    /**
      * Visibility of the entity
      */
     'visibility'?: UpdateGroupDtoVisibilityEnum;
@@ -45,13 +41,18 @@ export interface UpdateGroupDto {
     /**
      * Group type
      */
-    'type': string;
+    'type': UpdateGroupDtoTypeEnum;
 }
 
 export enum UpdateGroupDtoVisibilityEnum {
     public = 'public',
     connections = 'connections',
     hidden = 'hidden'
+}
+export enum UpdateGroupDtoTypeEnum {
+    open = 'open',
+    request = 'request',
+    invite = 'invite'
 }
 
 

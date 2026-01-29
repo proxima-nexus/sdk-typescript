@@ -23,10 +23,6 @@ export interface CreateEventDto {
      */
     'displayName': string;
     /**
-     * User ID of the requester
-     */
-    'requesterUserId': string;
-    /**
      * Visibility of the entity
      */
     'visibility': CreateEventDtoVisibilityEnum;
@@ -62,6 +58,10 @@ export interface CreateEventDto {
      * Identifier of associated group which owns the event. Owners/admins of the group will be admins of the event.
      */
     'associatedGroupId'?: string;
+    /**
+     * Maximum number of attendees allowed (null = unlimited)
+     */
+    'maxNumAttendees'?: number;
 }
 
 export enum CreateEventDtoVisibilityEnum {

@@ -23,10 +23,6 @@ export interface CreateGroupDto {
      */
     'displayName': string;
     /**
-     * User ID of the requester
-     */
-    'requesterUserId': string;
-    /**
      * Visibility of the entity
      */
     'visibility': CreateGroupDtoVisibilityEnum;
@@ -49,13 +45,18 @@ export interface CreateGroupDto {
     /**
      * Group type
      */
-    'type': string;
+    'type': CreateGroupDtoTypeEnum;
 }
 
 export enum CreateGroupDtoVisibilityEnum {
     public = 'public',
     connections = 'connections',
     hidden = 'hidden'
+}
+export enum CreateGroupDtoTypeEnum {
+    open = 'open',
+    request = 'request',
+    invite = 'invite'
 }
 
 

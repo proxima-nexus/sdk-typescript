@@ -15,6 +15,9 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
+import type { EntityConnectionDto } from './entity-connection-dto';
+// May contain unused imports in some cases
+// @ts-ignore
 import type { LocationDto } from './location-dto';
 
 export interface GroupDto {
@@ -22,10 +25,6 @@ export interface GroupDto {
      * Unique identifier for the entity
      */
     'entityId'?: string;
-    /**
-     * Tenant identifier the entity belongs to
-     */
-    'tenantId'?: string;
     /**
      * Display name of the entity
      */
@@ -55,14 +54,27 @@ export interface GroupDto {
      */
     'location'?: LocationDto;
     /**
+     * Connection to the requester
+     */
+    'requesterConnection'?: EntityConnectionDto;
+    /**
      * Group type
      */
-    'type': string;
+    'type': GroupDtoTypeEnum;
+    /**
+     * Number of active members
+     */
+    'numMembers'?: number;
 }
 
 export enum GroupDtoVisibilityEnum {
     PUBLIC = 'PUBLIC',
     PRIVATE = 'PRIVATE'
+}
+export enum GroupDtoTypeEnum {
+    open = 'open',
+    request = 'request',
+    invite = 'invite'
 }
 
 

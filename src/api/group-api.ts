@@ -32,6 +32,8 @@ import type { GetGroupsDto } from '../models';
 // @ts-ignore
 import type { GroupDto } from '../models';
 // @ts-ignore
+import type { MutateGroupEntityConnectionDto } from '../models';
+// @ts-ignore
 import type { UpdateGroupDto } from '../models';
 // @ts-ignore
 import type { UserEntityConnectionDto } from '../models';
@@ -42,18 +44,24 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
     return {
         /**
          * 
-         * @summary Add a member to a group
+         * @summary Add or update a connection to a group (member, admin, or owner)
          * @param {string} groupId 
          * @param {string} userId 
+         * @param {string} xProximaNexusRequesterUserId ID of the user adding a connection to the group
+         * @param {MutateGroupEntityConnectionDto} mutateGroupEntityConnectionDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        addMember: async (groupId: string, userId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        addConnection: async (groupId: string, userId: string, xProximaNexusRequesterUserId: string, mutateGroupEntityConnectionDto: MutateGroupEntityConnectionDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'groupId' is not null or undefined
-            assertParamExists('addMember', 'groupId', groupId)
+            assertParamExists('addConnection', 'groupId', groupId)
             // verify required parameter 'userId' is not null or undefined
-            assertParamExists('addMember', 'userId', userId)
-            const localVarPath = `/group/{groupId}/members/{userId}`
+            assertParamExists('addConnection', 'userId', userId)
+            // verify required parameter 'xProximaNexusRequesterUserId' is not null or undefined
+            assertParamExists('addConnection', 'xProximaNexusRequesterUserId', xProximaNexusRequesterUserId)
+            // verify required parameter 'mutateGroupEntityConnectionDto' is not null or undefined
+            assertParamExists('addConnection', 'mutateGroupEntityConnectionDto', mutateGroupEntityConnectionDto)
+            const localVarPath = `/group/{groupId}/connection/{userId}`
                 .replace(`{${"groupId"}}`, encodeURIComponent(String(groupId)))
                 .replace(`{${"userId"}}`, encodeURIComponent(String(userId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -67,11 +75,19 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication api_key required
+            await setApiKeyToObject(localVarHeaderParameter, "X-Proxima-Nexus-Api-Key", configuration)
+
+            localVarHeaderParameter['Content-Type'] = 'application/json';
             localVarHeaderParameter['Accept'] = 'application/json';
 
+            if (xProximaNexusRequesterUserId != null) {
+                localVarHeaderParameter['X-Proxima-Nexus-Requester-User-Id'] = String(xProximaNexusRequesterUserId);
+            }
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(mutateGroupEntityConnectionDto, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -81,11 +97,14 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
         /**
          * 
          * @summary Create a group
+         * @param {string} xProximaNexusRequesterUserId ID of the user creating the group
          * @param {CreateGroupDto} createGroupDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        create: async (createGroupDto: CreateGroupDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        create: async (xProximaNexusRequesterUserId: string, createGroupDto: CreateGroupDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'xProximaNexusRequesterUserId' is not null or undefined
+            assertParamExists('create', 'xProximaNexusRequesterUserId', xProximaNexusRequesterUserId)
             // verify required parameter 'createGroupDto' is not null or undefined
             assertParamExists('create', 'createGroupDto', createGroupDto)
             const localVarPath = `/group`;
@@ -100,9 +119,15 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication api_key required
+            await setApiKeyToObject(localVarHeaderParameter, "X-Proxima-Nexus-Api-Key", configuration)
+
             localVarHeaderParameter['Content-Type'] = 'application/json';
             localVarHeaderParameter['Accept'] = 'application/json';
 
+            if (xProximaNexusRequesterUserId != null) {
+                localVarHeaderParameter['X-Proxima-Nexus-Requester-User-Id'] = String(xProximaNexusRequesterUserId);
+            }
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -117,12 +142,13 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
          * 
          * @summary Get a group by ID
          * @param {string} groupId 
+         * @param {string} [xProximaNexusRequesterUserId] ID of the user getting a group by ID. If set, 401 may be returned if the user cannot view the group, otherwise requesterConnection will be set on the result.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        findOne: async (groupId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        get: async (groupId: string, xProximaNexusRequesterUserId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'groupId' is not null or undefined
-            assertParamExists('findOne', 'groupId', groupId)
+            assertParamExists('get', 'groupId', groupId)
             const localVarPath = `/group/{groupId}`
                 .replace(`{${"groupId"}}`, encodeURIComponent(String(groupId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -136,8 +162,14 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication api_key required
+            await setApiKeyToObject(localVarHeaderParameter, "X-Proxima-Nexus-Api-Key", configuration)
+
             localVarHeaderParameter['Accept'] = 'application/json';
 
+            if (xProximaNexusRequesterUserId != null) {
+                localVarHeaderParameter['X-Proxima-Nexus-Requester-User-Id'] = String(xProximaNexusRequesterUserId);
+            }
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -151,10 +183,11 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
          * 
          * @summary Get a batch of groups by IDs
          * @param {GetGroupsDto} getGroupsDto 
+         * @param {string} [xProximaNexusRequesterUserId] ID of the user getting a batch of groups. If set, groups will be filtered to only include groups that the user can see, and requesterConnection will be set on the results.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getBatch: async (getGroupsDto: GetGroupsDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getBatch: async (getGroupsDto: GetGroupsDto, xProximaNexusRequesterUserId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'getGroupsDto' is not null or undefined
             assertParamExists('getBatch', 'getGroupsDto', getGroupsDto)
             const localVarPath = `/group/batch`;
@@ -169,9 +202,15 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication api_key required
+            await setApiKeyToObject(localVarHeaderParameter, "X-Proxima-Nexus-Api-Key", configuration)
+
             localVarHeaderParameter['Content-Type'] = 'application/json';
             localVarHeaderParameter['Accept'] = 'application/json';
 
+            if (xProximaNexusRequesterUserId != null) {
+                localVarHeaderParameter['X-Proxima-Nexus-Requester-User-Id'] = String(xProximaNexusRequesterUserId);
+            }
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -184,12 +223,64 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
         },
         /**
          * 
-         * @summary Get events of a group
+         * @summary Get connections of a group
          * @param {string} groupId 
+         * @param {Array<GroupControllerGetConnectionsStateEnum>} [state] Filter connections by state (e.g., requested for pending approvals)
+         * @param {Array<GroupControllerGetConnectionsTypeEnum>} [type] Filter connections by type. Can be a single type or multiple types (comma-separated or array)
+         * @param {string} [xProximaNexusRequesterUserId] ID of the user getting connections of the group. If set, 401 may be returned if the user cannot view the group connections.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getEvents: async (groupId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getConnections: async (groupId: string, state?: Array<GroupControllerGetConnectionsStateEnum>, type?: Array<GroupControllerGetConnectionsTypeEnum>, xProximaNexusRequesterUserId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'groupId' is not null or undefined
+            assertParamExists('getConnections', 'groupId', groupId)
+            const localVarPath = `/group/{groupId}/connections`
+                .replace(`{${"groupId"}}`, encodeURIComponent(String(groupId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication api_key required
+            await setApiKeyToObject(localVarHeaderParameter, "X-Proxima-Nexus-Api-Key", configuration)
+
+            if (state) {
+                localVarQueryParameter['state'] = state;
+            }
+
+            if (type) {
+                localVarQueryParameter['type'] = type;
+            }
+
+            localVarHeaderParameter['Accept'] = 'application/json';
+
+            if (xProximaNexusRequesterUserId != null) {
+                localVarHeaderParameter['X-Proxima-Nexus-Requester-User-Id'] = String(xProximaNexusRequesterUserId);
+            }
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Get events of a group
+         * @param {string} groupId 
+         * @param {string} [xProximaNexusRequesterUserId] ID of the user getting events of the group. If set, events will be filtered to only include events that the user can see, and requesterConnection will be set on the results.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getEvents: async (groupId: string, xProximaNexusRequesterUserId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'groupId' is not null or undefined
             assertParamExists('getEvents', 'groupId', groupId)
             const localVarPath = `/group/{groupId}/events`
@@ -205,42 +296,14 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication api_key required
+            await setApiKeyToObject(localVarHeaderParameter, "X-Proxima-Nexus-Api-Key", configuration)
+
             localVarHeaderParameter['Accept'] = 'application/json';
 
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary Get members of a group
-         * @param {string} groupId 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getMembers: async (groupId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'groupId' is not null or undefined
-            assertParamExists('getMembers', 'groupId', groupId)
-            const localVarPath = `/group/{groupId}/members`
-                .replace(`{${"groupId"}}`, encodeURIComponent(String(groupId)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
+            if (xProximaNexusRequesterUserId != null) {
+                localVarHeaderParameter['X-Proxima-Nexus-Requester-User-Id'] = String(xProximaNexusRequesterUserId);
             }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            localVarHeaderParameter['Accept'] = 'application/json';
-
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -254,7 +317,7 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
          * 
          * @summary Delete a group
          * @param {string} groupId 
-         * @param {string} xProximaNexusRequesterUserId Requester user ID
+         * @param {string} xProximaNexusRequesterUserId ID of the user deleting the group
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -276,6 +339,9 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication api_key required
+            await setApiKeyToObject(localVarHeaderParameter, "X-Proxima-Nexus-Api-Key", configuration)
+
 
             if (xProximaNexusRequesterUserId != null) {
                 localVarHeaderParameter['X-Proxima-Nexus-Requester-User-Id'] = String(xProximaNexusRequesterUserId);
@@ -291,18 +357,24 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
         },
         /**
          * 
-         * @summary Remove a member from a group
+         * @summary Remove a connection from a group
          * @param {string} groupId 
          * @param {string} userId 
+         * @param {string} xProximaNexusRequesterUserId ID of the user removing a connection from the group
+         * @param {MutateGroupEntityConnectionDto} mutateGroupEntityConnectionDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        removeMember: async (groupId: string, userId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        removeConnection: async (groupId: string, userId: string, xProximaNexusRequesterUserId: string, mutateGroupEntityConnectionDto: MutateGroupEntityConnectionDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'groupId' is not null or undefined
-            assertParamExists('removeMember', 'groupId', groupId)
+            assertParamExists('removeConnection', 'groupId', groupId)
             // verify required parameter 'userId' is not null or undefined
-            assertParamExists('removeMember', 'userId', userId)
-            const localVarPath = `/group/{groupId}/members/{userId}`
+            assertParamExists('removeConnection', 'userId', userId)
+            // verify required parameter 'xProximaNexusRequesterUserId' is not null or undefined
+            assertParamExists('removeConnection', 'xProximaNexusRequesterUserId', xProximaNexusRequesterUserId)
+            // verify required parameter 'mutateGroupEntityConnectionDto' is not null or undefined
+            assertParamExists('removeConnection', 'mutateGroupEntityConnectionDto', mutateGroupEntityConnectionDto)
+            const localVarPath = `/group/{groupId}/connection/{userId}`
                 .replace(`{${"groupId"}}`, encodeURIComponent(String(groupId)))
                 .replace(`{${"userId"}}`, encodeURIComponent(String(userId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -316,11 +388,18 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            localVarHeaderParameter['Accept'] = 'application/json';
+            // authentication api_key required
+            await setApiKeyToObject(localVarHeaderParameter, "X-Proxima-Nexus-Api-Key", configuration)
 
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            if (xProximaNexusRequesterUserId != null) {
+                localVarHeaderParameter['X-Proxima-Nexus-Requester-User-Id'] = String(xProximaNexusRequesterUserId);
+            }
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(mutateGroupEntityConnectionDto, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -339,10 +418,11 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
          * @param {number} [minLongitude] Minimum longitude for bounding box
          * @param {number} [maxLongitude] Maximum longitude for bounding box
          * @param {number} [limit] Limit results (1-1000)
+         * @param {string} [xProximaNexusRequesterUserId] ID of the user searching for groups. If set, groups will be filtered to only include groups that the user can see, and requesterConnection will be set on the results.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        search: async (displayName?: string, latitude?: number, longitude?: number, radius?: number, minLatitude?: number, maxLatitude?: number, minLongitude?: number, maxLongitude?: number, limit?: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        search: async (displayName?: string, latitude?: number, longitude?: number, radius?: number, minLatitude?: number, maxLatitude?: number, minLongitude?: number, maxLongitude?: number, limit?: number, xProximaNexusRequesterUserId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/group`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -354,6 +434,9 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            // authentication api_key required
+            await setApiKeyToObject(localVarHeaderParameter, "X-Proxima-Nexus-Api-Key", configuration)
 
             if (displayName !== undefined) {
                 localVarQueryParameter['displayName'] = displayName;
@@ -393,6 +476,9 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
 
             localVarHeaderParameter['Accept'] = 'application/json';
 
+            if (xProximaNexusRequesterUserId != null) {
+                localVarHeaderParameter['X-Proxima-Nexus-Requester-User-Id'] = String(xProximaNexusRequesterUserId);
+            }
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -406,13 +492,16 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
          * 
          * @summary Update a group
          * @param {string} groupId 
+         * @param {string} xProximaNexusRequesterUserId ID of the user updating the group
          * @param {UpdateGroupDto} updateGroupDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        update: async (groupId: string, updateGroupDto: UpdateGroupDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        update: async (groupId: string, xProximaNexusRequesterUserId: string, updateGroupDto: UpdateGroupDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'groupId' is not null or undefined
             assertParamExists('update', 'groupId', groupId)
+            // verify required parameter 'xProximaNexusRequesterUserId' is not null or undefined
+            assertParamExists('update', 'xProximaNexusRequesterUserId', xProximaNexusRequesterUserId)
             // verify required parameter 'updateGroupDto' is not null or undefined
             assertParamExists('update', 'updateGroupDto', updateGroupDto)
             const localVarPath = `/group/{groupId}`
@@ -428,9 +517,15 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication api_key required
+            await setApiKeyToObject(localVarHeaderParameter, "X-Proxima-Nexus-Api-Key", configuration)
+
             localVarHeaderParameter['Content-Type'] = 'application/json';
             localVarHeaderParameter['Accept'] = 'application/json';
 
+            if (xProximaNexusRequesterUserId != null) {
+                localVarHeaderParameter['X-Proxima-Nexus-Requester-User-Id'] = String(xProximaNexusRequesterUserId);
+            }
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -452,27 +547,30 @@ export const GroupApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
-         * @summary Add a member to a group
+         * @summary Add or update a connection to a group (member, admin, or owner)
          * @param {string} groupId 
          * @param {string} userId 
+         * @param {string} xProximaNexusRequesterUserId ID of the user adding a connection to the group
+         * @param {MutateGroupEntityConnectionDto} mutateGroupEntityConnectionDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async addMember(groupId: string, userId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EntityConnectionDto>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.addMember(groupId, userId, options);
+        async addConnection(groupId: string, userId: string, xProximaNexusRequesterUserId: string, mutateGroupEntityConnectionDto: MutateGroupEntityConnectionDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EntityConnectionDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.addConnection(groupId, userId, xProximaNexusRequesterUserId, mutateGroupEntityConnectionDto, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['GroupApi.addMember']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['GroupApi.addConnection']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
          * @summary Create a group
+         * @param {string} xProximaNexusRequesterUserId ID of the user creating the group
          * @param {CreateGroupDto} createGroupDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async create(createGroupDto: CreateGroupDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<string>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.create(createGroupDto, options);
+        async create(xProximaNexusRequesterUserId: string, createGroupDto: CreateGroupDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<string>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.create(xProximaNexusRequesterUserId, createGroupDto, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['GroupApi.create']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -481,59 +579,65 @@ export const GroupApiFp = function(configuration?: Configuration) {
          * 
          * @summary Get a group by ID
          * @param {string} groupId 
+         * @param {string} [xProximaNexusRequesterUserId] ID of the user getting a group by ID. If set, 401 may be returned if the user cannot view the group, otherwise requesterConnection will be set on the result.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async findOne(groupId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GroupDto>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.findOne(groupId, options);
+        async get(groupId: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GroupDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.get(groupId, xProximaNexusRequesterUserId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['GroupApi.findOne']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['GroupApi.get']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
          * @summary Get a batch of groups by IDs
          * @param {GetGroupsDto} getGroupsDto 
+         * @param {string} [xProximaNexusRequesterUserId] ID of the user getting a batch of groups. If set, groups will be filtered to only include groups that the user can see, and requesterConnection will be set on the results.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getBatch(getGroupsDto: GetGroupsDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<GroupDto>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getBatch(getGroupsDto, options);
+        async getBatch(getGroupsDto: GetGroupsDto, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<GroupDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getBatch(getGroupsDto, xProximaNexusRequesterUserId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['GroupApi.getBatch']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
-         * @summary Get events of a group
+         * @summary Get connections of a group
          * @param {string} groupId 
+         * @param {Array<GroupControllerGetConnectionsStateEnum>} [state] Filter connections by state (e.g., requested for pending approvals)
+         * @param {Array<GroupControllerGetConnectionsTypeEnum>} [type] Filter connections by type. Can be a single type or multiple types (comma-separated or array)
+         * @param {string} [xProximaNexusRequesterUserId] ID of the user getting connections of the group. If set, 401 may be returned if the user cannot view the group connections.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getEvents(groupId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<EventEntityConnectionDto>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getEvents(groupId, options);
+        async getConnections(groupId: string, state?: Array<GroupControllerGetConnectionsStateEnum>, type?: Array<GroupControllerGetConnectionsTypeEnum>, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<UserEntityConnectionDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getConnections(groupId, state, type, xProximaNexusRequesterUserId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GroupApi.getConnections']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary Get events of a group
+         * @param {string} groupId 
+         * @param {string} [xProximaNexusRequesterUserId] ID of the user getting events of the group. If set, events will be filtered to only include events that the user can see, and requesterConnection will be set on the results.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getEvents(groupId: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<EventEntityConnectionDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getEvents(groupId, xProximaNexusRequesterUserId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['GroupApi.getEvents']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
-         * @summary Get members of a group
-         * @param {string} groupId 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async getMembers(groupId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<UserEntityConnectionDto>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getMembers(groupId, options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['GroupApi.getMembers']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
-        /**
-         * 
          * @summary Delete a group
          * @param {string} groupId 
-         * @param {string} xProximaNexusRequesterUserId Requester user ID
+         * @param {string} xProximaNexusRequesterUserId ID of the user deleting the group
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -545,16 +649,18 @@ export const GroupApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @summary Remove a member from a group
+         * @summary Remove a connection from a group
          * @param {string} groupId 
          * @param {string} userId 
+         * @param {string} xProximaNexusRequesterUserId ID of the user removing a connection from the group
+         * @param {MutateGroupEntityConnectionDto} mutateGroupEntityConnectionDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async removeMember(groupId: string, userId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<string>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.removeMember(groupId, userId, options);
+        async removeConnection(groupId: string, userId: string, xProximaNexusRequesterUserId: string, mutateGroupEntityConnectionDto: MutateGroupEntityConnectionDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.removeConnection(groupId, userId, xProximaNexusRequesterUserId, mutateGroupEntityConnectionDto, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['GroupApi.removeMember']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['GroupApi.removeConnection']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -569,11 +675,12 @@ export const GroupApiFp = function(configuration?: Configuration) {
          * @param {number} [minLongitude] Minimum longitude for bounding box
          * @param {number} [maxLongitude] Maximum longitude for bounding box
          * @param {number} [limit] Limit results (1-1000)
+         * @param {string} [xProximaNexusRequesterUserId] ID of the user searching for groups. If set, groups will be filtered to only include groups that the user can see, and requesterConnection will be set on the results.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async search(displayName?: string, latitude?: number, longitude?: number, radius?: number, minLatitude?: number, maxLatitude?: number, minLongitude?: number, maxLongitude?: number, limit?: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<GroupDto>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.search(displayName, latitude, longitude, radius, minLatitude, maxLatitude, minLongitude, maxLongitude, limit, options);
+        async search(displayName?: string, latitude?: number, longitude?: number, radius?: number, minLatitude?: number, maxLatitude?: number, minLongitude?: number, maxLongitude?: number, limit?: number, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<GroupDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.search(displayName, latitude, longitude, radius, minLatitude, maxLatitude, minLongitude, maxLongitude, limit, xProximaNexusRequesterUserId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['GroupApi.search']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -582,12 +689,13 @@ export const GroupApiFp = function(configuration?: Configuration) {
          * 
          * @summary Update a group
          * @param {string} groupId 
+         * @param {string} xProximaNexusRequesterUserId ID of the user updating the group
          * @param {UpdateGroupDto} updateGroupDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async update(groupId: string, updateGroupDto: UpdateGroupDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<string>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.update(groupId, updateGroupDto, options);
+        async update(groupId: string, xProximaNexusRequesterUserId: string, updateGroupDto: UpdateGroupDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<string>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.update(groupId, xProximaNexusRequesterUserId, updateGroupDto, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['GroupApi.update']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -603,70 +711,79 @@ export const GroupApiFactory = function (configuration?: Configuration, basePath
     return {
         /**
          * 
-         * @summary Add a member to a group
+         * @summary Add or update a connection to a group (member, admin, or owner)
          * @param {string} groupId 
          * @param {string} userId 
+         * @param {string} xProximaNexusRequesterUserId ID of the user adding a connection to the group
+         * @param {MutateGroupEntityConnectionDto} mutateGroupEntityConnectionDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        addMember(groupId: string, userId: string, options?: RawAxiosRequestConfig): AxiosPromise<EntityConnectionDto> {
-            return localVarFp.addMember(groupId, userId, options).then((request) => request(axios, basePath));
+        addConnection(groupId: string, userId: string, xProximaNexusRequesterUserId: string, mutateGroupEntityConnectionDto: MutateGroupEntityConnectionDto, options?: RawAxiosRequestConfig): AxiosPromise<EntityConnectionDto> {
+            return localVarFp.addConnection(groupId, userId, xProximaNexusRequesterUserId, mutateGroupEntityConnectionDto, options).then((request) => request(axios, basePath));
         },
         /**
          * 
          * @summary Create a group
+         * @param {string} xProximaNexusRequesterUserId ID of the user creating the group
          * @param {CreateGroupDto} createGroupDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        create(createGroupDto: CreateGroupDto, options?: RawAxiosRequestConfig): AxiosPromise<string> {
-            return localVarFp.create(createGroupDto, options).then((request) => request(axios, basePath));
+        create(xProximaNexusRequesterUserId: string, createGroupDto: CreateGroupDto, options?: RawAxiosRequestConfig): AxiosPromise<string> {
+            return localVarFp.create(xProximaNexusRequesterUserId, createGroupDto, options).then((request) => request(axios, basePath));
         },
         /**
          * 
          * @summary Get a group by ID
          * @param {string} groupId 
+         * @param {string} [xProximaNexusRequesterUserId] ID of the user getting a group by ID. If set, 401 may be returned if the user cannot view the group, otherwise requesterConnection will be set on the result.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        findOne(groupId: string, options?: RawAxiosRequestConfig): AxiosPromise<GroupDto> {
-            return localVarFp.findOne(groupId, options).then((request) => request(axios, basePath));
+        get(groupId: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): AxiosPromise<GroupDto> {
+            return localVarFp.get(groupId, xProximaNexusRequesterUserId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
          * @summary Get a batch of groups by IDs
          * @param {GetGroupsDto} getGroupsDto 
+         * @param {string} [xProximaNexusRequesterUserId] ID of the user getting a batch of groups. If set, groups will be filtered to only include groups that the user can see, and requesterConnection will be set on the results.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getBatch(getGroupsDto: GetGroupsDto, options?: RawAxiosRequestConfig): AxiosPromise<Array<GroupDto>> {
-            return localVarFp.getBatch(getGroupsDto, options).then((request) => request(axios, basePath));
+        getBatch(getGroupsDto: GetGroupsDto, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<GroupDto>> {
+            return localVarFp.getBatch(getGroupsDto, xProximaNexusRequesterUserId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Get connections of a group
+         * @param {string} groupId 
+         * @param {Array<GroupControllerGetConnectionsStateEnum>} [state] Filter connections by state (e.g., requested for pending approvals)
+         * @param {Array<GroupControllerGetConnectionsTypeEnum>} [type] Filter connections by type. Can be a single type or multiple types (comma-separated or array)
+         * @param {string} [xProximaNexusRequesterUserId] ID of the user getting connections of the group. If set, 401 may be returned if the user cannot view the group connections.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getConnections(groupId: string, state?: Array<GroupControllerGetConnectionsStateEnum>, type?: Array<GroupControllerGetConnectionsTypeEnum>, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<UserEntityConnectionDto>> {
+            return localVarFp.getConnections(groupId, state, type, xProximaNexusRequesterUserId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
          * @summary Get events of a group
          * @param {string} groupId 
+         * @param {string} [xProximaNexusRequesterUserId] ID of the user getting events of the group. If set, events will be filtered to only include events that the user can see, and requesterConnection will be set on the results.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getEvents(groupId: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<EventEntityConnectionDto>> {
-            return localVarFp.getEvents(groupId, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary Get members of a group
-         * @param {string} groupId 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getMembers(groupId: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<UserEntityConnectionDto>> {
-            return localVarFp.getMembers(groupId, options).then((request) => request(axios, basePath));
+        getEvents(groupId: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<EventEntityConnectionDto>> {
+            return localVarFp.getEvents(groupId, xProximaNexusRequesterUserId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
          * @summary Delete a group
          * @param {string} groupId 
-         * @param {string} xProximaNexusRequesterUserId Requester user ID
+         * @param {string} xProximaNexusRequesterUserId ID of the user deleting the group
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -675,14 +792,16 @@ export const GroupApiFactory = function (configuration?: Configuration, basePath
         },
         /**
          * 
-         * @summary Remove a member from a group
+         * @summary Remove a connection from a group
          * @param {string} groupId 
          * @param {string} userId 
+         * @param {string} xProximaNexusRequesterUserId ID of the user removing a connection from the group
+         * @param {MutateGroupEntityConnectionDto} mutateGroupEntityConnectionDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        removeMember(groupId: string, userId: string, options?: RawAxiosRequestConfig): AxiosPromise<string> {
-            return localVarFp.removeMember(groupId, userId, options).then((request) => request(axios, basePath));
+        removeConnection(groupId: string, userId: string, xProximaNexusRequesterUserId: string, mutateGroupEntityConnectionDto: MutateGroupEntityConnectionDto, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.removeConnection(groupId, userId, xProximaNexusRequesterUserId, mutateGroupEntityConnectionDto, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -696,22 +815,24 @@ export const GroupApiFactory = function (configuration?: Configuration, basePath
          * @param {number} [minLongitude] Minimum longitude for bounding box
          * @param {number} [maxLongitude] Maximum longitude for bounding box
          * @param {number} [limit] Limit results (1-1000)
+         * @param {string} [xProximaNexusRequesterUserId] ID of the user searching for groups. If set, groups will be filtered to only include groups that the user can see, and requesterConnection will be set on the results.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        search(displayName?: string, latitude?: number, longitude?: number, radius?: number, minLatitude?: number, maxLatitude?: number, minLongitude?: number, maxLongitude?: number, limit?: number, options?: RawAxiosRequestConfig): AxiosPromise<Array<GroupDto>> {
-            return localVarFp.search(displayName, latitude, longitude, radius, minLatitude, maxLatitude, minLongitude, maxLongitude, limit, options).then((request) => request(axios, basePath));
+        search(displayName?: string, latitude?: number, longitude?: number, radius?: number, minLatitude?: number, maxLatitude?: number, minLongitude?: number, maxLongitude?: number, limit?: number, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<GroupDto>> {
+            return localVarFp.search(displayName, latitude, longitude, radius, minLatitude, maxLatitude, minLongitude, maxLongitude, limit, xProximaNexusRequesterUserId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
          * @summary Update a group
          * @param {string} groupId 
+         * @param {string} xProximaNexusRequesterUserId ID of the user updating the group
          * @param {UpdateGroupDto} updateGroupDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        update(groupId: string, updateGroupDto: UpdateGroupDto, options?: RawAxiosRequestConfig): AxiosPromise<string> {
-            return localVarFp.update(groupId, updateGroupDto, options).then((request) => request(axios, basePath));
+        update(groupId: string, xProximaNexusRequesterUserId: string, updateGroupDto: UpdateGroupDto, options?: RawAxiosRequestConfig): AxiosPromise<string> {
+            return localVarFp.update(groupId, xProximaNexusRequesterUserId, updateGroupDto, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -722,64 +843,73 @@ export const GroupApiFactory = function (configuration?: Configuration, basePath
 export interface GroupApiInterface {
     /**
      * 
-     * @summary Add a member to a group
+     * @summary Add or update a connection to a group (member, admin, or owner)
      * @param {string} groupId 
      * @param {string} userId 
+     * @param {string} xProximaNexusRequesterUserId ID of the user adding a connection to the group
+     * @param {MutateGroupEntityConnectionDto} mutateGroupEntityConnectionDto 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    addMember(groupId: string, userId: string, options?: RawAxiosRequestConfig): AxiosPromise<EntityConnectionDto>;
+    addConnection(groupId: string, userId: string, xProximaNexusRequesterUserId: string, mutateGroupEntityConnectionDto: MutateGroupEntityConnectionDto, options?: RawAxiosRequestConfig): AxiosPromise<EntityConnectionDto>;
 
     /**
      * 
      * @summary Create a group
+     * @param {string} xProximaNexusRequesterUserId ID of the user creating the group
      * @param {CreateGroupDto} createGroupDto 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    create(createGroupDto: CreateGroupDto, options?: RawAxiosRequestConfig): AxiosPromise<string>;
+    create(xProximaNexusRequesterUserId: string, createGroupDto: CreateGroupDto, options?: RawAxiosRequestConfig): AxiosPromise<string>;
 
     /**
      * 
      * @summary Get a group by ID
      * @param {string} groupId 
+     * @param {string} [xProximaNexusRequesterUserId] ID of the user getting a group by ID. If set, 401 may be returned if the user cannot view the group, otherwise requesterConnection will be set on the result.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    findOne(groupId: string, options?: RawAxiosRequestConfig): AxiosPromise<GroupDto>;
+    get(groupId: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): AxiosPromise<GroupDto>;
 
     /**
      * 
      * @summary Get a batch of groups by IDs
      * @param {GetGroupsDto} getGroupsDto 
+     * @param {string} [xProximaNexusRequesterUserId] ID of the user getting a batch of groups. If set, groups will be filtered to only include groups that the user can see, and requesterConnection will be set on the results.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getBatch(getGroupsDto: GetGroupsDto, options?: RawAxiosRequestConfig): AxiosPromise<Array<GroupDto>>;
+    getBatch(getGroupsDto: GetGroupsDto, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<GroupDto>>;
+
+    /**
+     * 
+     * @summary Get connections of a group
+     * @param {string} groupId 
+     * @param {Array<GroupControllerGetConnectionsStateEnum>} [state] Filter connections by state (e.g., requested for pending approvals)
+     * @param {Array<GroupControllerGetConnectionsTypeEnum>} [type] Filter connections by type. Can be a single type or multiple types (comma-separated or array)
+     * @param {string} [xProximaNexusRequesterUserId] ID of the user getting connections of the group. If set, 401 may be returned if the user cannot view the group connections.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getConnections(groupId: string, state?: Array<GroupControllerGetConnectionsStateEnum>, type?: Array<GroupControllerGetConnectionsTypeEnum>, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<UserEntityConnectionDto>>;
 
     /**
      * 
      * @summary Get events of a group
      * @param {string} groupId 
+     * @param {string} [xProximaNexusRequesterUserId] ID of the user getting events of the group. If set, events will be filtered to only include events that the user can see, and requesterConnection will be set on the results.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getEvents(groupId: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<EventEntityConnectionDto>>;
-
-    /**
-     * 
-     * @summary Get members of a group
-     * @param {string} groupId 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    getMembers(groupId: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<UserEntityConnectionDto>>;
+    getEvents(groupId: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<EventEntityConnectionDto>>;
 
     /**
      * 
      * @summary Delete a group
      * @param {string} groupId 
-     * @param {string} xProximaNexusRequesterUserId Requester user ID
+     * @param {string} xProximaNexusRequesterUserId ID of the user deleting the group
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -787,13 +917,15 @@ export interface GroupApiInterface {
 
     /**
      * 
-     * @summary Remove a member from a group
+     * @summary Remove a connection from a group
      * @param {string} groupId 
      * @param {string} userId 
+     * @param {string} xProximaNexusRequesterUserId ID of the user removing a connection from the group
+     * @param {MutateGroupEntityConnectionDto} mutateGroupEntityConnectionDto 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    removeMember(groupId: string, userId: string, options?: RawAxiosRequestConfig): AxiosPromise<string>;
+    removeConnection(groupId: string, userId: string, xProximaNexusRequesterUserId: string, mutateGroupEntityConnectionDto: MutateGroupEntityConnectionDto, options?: RawAxiosRequestConfig): AxiosPromise<void>;
 
     /**
      * 
@@ -807,20 +939,22 @@ export interface GroupApiInterface {
      * @param {number} [minLongitude] Minimum longitude for bounding box
      * @param {number} [maxLongitude] Maximum longitude for bounding box
      * @param {number} [limit] Limit results (1-1000)
+     * @param {string} [xProximaNexusRequesterUserId] ID of the user searching for groups. If set, groups will be filtered to only include groups that the user can see, and requesterConnection will be set on the results.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    search(displayName?: string, latitude?: number, longitude?: number, radius?: number, minLatitude?: number, maxLatitude?: number, minLongitude?: number, maxLongitude?: number, limit?: number, options?: RawAxiosRequestConfig): AxiosPromise<Array<GroupDto>>;
+    search(displayName?: string, latitude?: number, longitude?: number, radius?: number, minLatitude?: number, maxLatitude?: number, minLongitude?: number, maxLongitude?: number, limit?: number, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<GroupDto>>;
 
     /**
      * 
      * @summary Update a group
      * @param {string} groupId 
+     * @param {string} xProximaNexusRequesterUserId ID of the user updating the group
      * @param {UpdateGroupDto} updateGroupDto 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    update(groupId: string, updateGroupDto: UpdateGroupDto, options?: RawAxiosRequestConfig): AxiosPromise<string>;
+    update(groupId: string, xProximaNexusRequesterUserId: string, updateGroupDto: UpdateGroupDto, options?: RawAxiosRequestConfig): AxiosPromise<string>;
 
 }
 
@@ -830,76 +964,85 @@ export interface GroupApiInterface {
 export class GroupApi extends BaseAPI implements GroupApiInterface {
     /**
      * 
-     * @summary Add a member to a group
+     * @summary Add or update a connection to a group (member, admin, or owner)
      * @param {string} groupId 
      * @param {string} userId 
+     * @param {string} xProximaNexusRequesterUserId ID of the user adding a connection to the group
+     * @param {MutateGroupEntityConnectionDto} mutateGroupEntityConnectionDto 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public addMember(groupId: string, userId: string, options?: RawAxiosRequestConfig) {
-        return GroupApiFp(this.configuration).addMember(groupId, userId, options).then((request) => request(this.axios, this.basePath));
+    public addConnection(groupId: string, userId: string, xProximaNexusRequesterUserId: string, mutateGroupEntityConnectionDto: MutateGroupEntityConnectionDto, options?: RawAxiosRequestConfig) {
+        return GroupApiFp(this.configuration).addConnection(groupId, userId, xProximaNexusRequesterUserId, mutateGroupEntityConnectionDto, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
      * @summary Create a group
+     * @param {string} xProximaNexusRequesterUserId ID of the user creating the group
      * @param {CreateGroupDto} createGroupDto 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public create(createGroupDto: CreateGroupDto, options?: RawAxiosRequestConfig) {
-        return GroupApiFp(this.configuration).create(createGroupDto, options).then((request) => request(this.axios, this.basePath));
+    public create(xProximaNexusRequesterUserId: string, createGroupDto: CreateGroupDto, options?: RawAxiosRequestConfig) {
+        return GroupApiFp(this.configuration).create(xProximaNexusRequesterUserId, createGroupDto, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
      * @summary Get a group by ID
      * @param {string} groupId 
+     * @param {string} [xProximaNexusRequesterUserId] ID of the user getting a group by ID. If set, 401 may be returned if the user cannot view the group, otherwise requesterConnection will be set on the result.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public findOne(groupId: string, options?: RawAxiosRequestConfig) {
-        return GroupApiFp(this.configuration).findOne(groupId, options).then((request) => request(this.axios, this.basePath));
+    public get(groupId: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig) {
+        return GroupApiFp(this.configuration).get(groupId, xProximaNexusRequesterUserId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
      * @summary Get a batch of groups by IDs
      * @param {GetGroupsDto} getGroupsDto 
+     * @param {string} [xProximaNexusRequesterUserId] ID of the user getting a batch of groups. If set, groups will be filtered to only include groups that the user can see, and requesterConnection will be set on the results.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public getBatch(getGroupsDto: GetGroupsDto, options?: RawAxiosRequestConfig) {
-        return GroupApiFp(this.configuration).getBatch(getGroupsDto, options).then((request) => request(this.axios, this.basePath));
+    public getBatch(getGroupsDto: GetGroupsDto, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig) {
+        return GroupApiFp(this.configuration).getBatch(getGroupsDto, xProximaNexusRequesterUserId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Get connections of a group
+     * @param {string} groupId 
+     * @param {Array<GroupControllerGetConnectionsStateEnum>} [state] Filter connections by state (e.g., requested for pending approvals)
+     * @param {Array<GroupControllerGetConnectionsTypeEnum>} [type] Filter connections by type. Can be a single type or multiple types (comma-separated or array)
+     * @param {string} [xProximaNexusRequesterUserId] ID of the user getting connections of the group. If set, 401 may be returned if the user cannot view the group connections.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public getConnections(groupId: string, state?: Array<GroupControllerGetConnectionsStateEnum>, type?: Array<GroupControllerGetConnectionsTypeEnum>, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig) {
+        return GroupApiFp(this.configuration).getConnections(groupId, state, type, xProximaNexusRequesterUserId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
      * @summary Get events of a group
      * @param {string} groupId 
+     * @param {string} [xProximaNexusRequesterUserId] ID of the user getting events of the group. If set, events will be filtered to only include events that the user can see, and requesterConnection will be set on the results.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public getEvents(groupId: string, options?: RawAxiosRequestConfig) {
-        return GroupApiFp(this.configuration).getEvents(groupId, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary Get members of a group
-     * @param {string} groupId 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    public getMembers(groupId: string, options?: RawAxiosRequestConfig) {
-        return GroupApiFp(this.configuration).getMembers(groupId, options).then((request) => request(this.axios, this.basePath));
+    public getEvents(groupId: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig) {
+        return GroupApiFp(this.configuration).getEvents(groupId, xProximaNexusRequesterUserId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
      * @summary Delete a group
      * @param {string} groupId 
-     * @param {string} xProximaNexusRequesterUserId Requester user ID
+     * @param {string} xProximaNexusRequesterUserId ID of the user deleting the group
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -909,14 +1052,16 @@ export class GroupApi extends BaseAPI implements GroupApiInterface {
 
     /**
      * 
-     * @summary Remove a member from a group
+     * @summary Remove a connection from a group
      * @param {string} groupId 
      * @param {string} userId 
+     * @param {string} xProximaNexusRequesterUserId ID of the user removing a connection from the group
+     * @param {MutateGroupEntityConnectionDto} mutateGroupEntityConnectionDto 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public removeMember(groupId: string, userId: string, options?: RawAxiosRequestConfig) {
-        return GroupApiFp(this.configuration).removeMember(groupId, userId, options).then((request) => request(this.axios, this.basePath));
+    public removeConnection(groupId: string, userId: string, xProximaNexusRequesterUserId: string, mutateGroupEntityConnectionDto: MutateGroupEntityConnectionDto, options?: RawAxiosRequestConfig) {
+        return GroupApiFp(this.configuration).removeConnection(groupId, userId, xProximaNexusRequesterUserId, mutateGroupEntityConnectionDto, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -931,23 +1076,36 @@ export class GroupApi extends BaseAPI implements GroupApiInterface {
      * @param {number} [minLongitude] Minimum longitude for bounding box
      * @param {number} [maxLongitude] Maximum longitude for bounding box
      * @param {number} [limit] Limit results (1-1000)
+     * @param {string} [xProximaNexusRequesterUserId] ID of the user searching for groups. If set, groups will be filtered to only include groups that the user can see, and requesterConnection will be set on the results.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public search(displayName?: string, latitude?: number, longitude?: number, radius?: number, minLatitude?: number, maxLatitude?: number, minLongitude?: number, maxLongitude?: number, limit?: number, options?: RawAxiosRequestConfig) {
-        return GroupApiFp(this.configuration).search(displayName, latitude, longitude, radius, minLatitude, maxLatitude, minLongitude, maxLongitude, limit, options).then((request) => request(this.axios, this.basePath));
+    public search(displayName?: string, latitude?: number, longitude?: number, radius?: number, minLatitude?: number, maxLatitude?: number, minLongitude?: number, maxLongitude?: number, limit?: number, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig) {
+        return GroupApiFp(this.configuration).search(displayName, latitude, longitude, radius, minLatitude, maxLatitude, minLongitude, maxLongitude, limit, xProximaNexusRequesterUserId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
      * @summary Update a group
      * @param {string} groupId 
+     * @param {string} xProximaNexusRequesterUserId ID of the user updating the group
      * @param {UpdateGroupDto} updateGroupDto 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public update(groupId: string, updateGroupDto: UpdateGroupDto, options?: RawAxiosRequestConfig) {
-        return GroupApiFp(this.configuration).update(groupId, updateGroupDto, options).then((request) => request(this.axios, this.basePath));
+    public update(groupId: string, xProximaNexusRequesterUserId: string, updateGroupDto: UpdateGroupDto, options?: RawAxiosRequestConfig) {
+        return GroupApiFp(this.configuration).update(groupId, xProximaNexusRequesterUserId, updateGroupDto, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
+export enum GroupControllerGetConnectionsStateEnum {
+    requested = 'requested',
+    active = 'active',
+    rejected = 'rejected',
+    blocked = 'blocked'
+}
+export enum GroupControllerGetConnectionsTypeEnum {
+    member = 'member',
+    admin = 'admin',
+    owner = 'owner'
+}

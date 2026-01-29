@@ -30,6 +30,8 @@ import type { EventDto } from '../models';
 // @ts-ignore
 import type { GetEventsDto } from '../models';
 // @ts-ignore
+import type { MutateEventEntityConnectionDto } from '../models';
+// @ts-ignore
 import type { UpdateEventDto } from '../models';
 // @ts-ignore
 import type { UserEntityConnectionDto } from '../models';
@@ -43,15 +45,21 @@ export const EventApiAxiosParamCreator = function (configuration?: Configuration
          * @summary Add an attendee to an event
          * @param {string} eventId 
          * @param {string} userId 
+         * @param {string} xProximaNexusRequesterUserId ID of the user removing an attendee from the event
+         * @param {MutateEventEntityConnectionDto} mutateEventEntityConnectionDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        addAttendee: async (eventId: string, userId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        addConnection: async (eventId: string, userId: string, xProximaNexusRequesterUserId: string, mutateEventEntityConnectionDto: MutateEventEntityConnectionDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'eventId' is not null or undefined
-            assertParamExists('addAttendee', 'eventId', eventId)
+            assertParamExists('addConnection', 'eventId', eventId)
             // verify required parameter 'userId' is not null or undefined
-            assertParamExists('addAttendee', 'userId', userId)
-            const localVarPath = `/event/{eventId}/attendees/{userId}`
+            assertParamExists('addConnection', 'userId', userId)
+            // verify required parameter 'xProximaNexusRequesterUserId' is not null or undefined
+            assertParamExists('addConnection', 'xProximaNexusRequesterUserId', xProximaNexusRequesterUserId)
+            // verify required parameter 'mutateEventEntityConnectionDto' is not null or undefined
+            assertParamExists('addConnection', 'mutateEventEntityConnectionDto', mutateEventEntityConnectionDto)
+            const localVarPath = `/event/{eventId}/connection/{userId}`
                 .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)))
                 .replace(`{${"userId"}}`, encodeURIComponent(String(userId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -65,11 +73,19 @@ export const EventApiAxiosParamCreator = function (configuration?: Configuration
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication api_key required
+            await setApiKeyToObject(localVarHeaderParameter, "X-Proxima-Nexus-Api-Key", configuration)
+
+            localVarHeaderParameter['Content-Type'] = 'application/json';
             localVarHeaderParameter['Accept'] = 'application/json';
 
+            if (xProximaNexusRequesterUserId != null) {
+                localVarHeaderParameter['X-Proxima-Nexus-Requester-User-Id'] = String(xProximaNexusRequesterUserId);
+            }
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(mutateEventEntityConnectionDto, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -78,12 +94,15 @@ export const EventApiAxiosParamCreator = function (configuration?: Configuration
         },
         /**
          * 
-         * @summary Create an event
+         * @summary Create an event. Owner will be the user creating the event or the group associated with the event (if set)
+         * @param {string} xProximaNexusRequesterUserId ID of the user creating the event
          * @param {CreateEventDto} createEventDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        create: async (createEventDto: CreateEventDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        create: async (xProximaNexusRequesterUserId: string, createEventDto: CreateEventDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'xProximaNexusRequesterUserId' is not null or undefined
+            assertParamExists('create', 'xProximaNexusRequesterUserId', xProximaNexusRequesterUserId)
             // verify required parameter 'createEventDto' is not null or undefined
             assertParamExists('create', 'createEventDto', createEventDto)
             const localVarPath = `/event`;
@@ -98,9 +117,15 @@ export const EventApiAxiosParamCreator = function (configuration?: Configuration
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication api_key required
+            await setApiKeyToObject(localVarHeaderParameter, "X-Proxima-Nexus-Api-Key", configuration)
+
             localVarHeaderParameter['Content-Type'] = 'application/json';
             localVarHeaderParameter['Accept'] = 'application/json';
 
+            if (xProximaNexusRequesterUserId != null) {
+                localVarHeaderParameter['X-Proxima-Nexus-Requester-User-Id'] = String(xProximaNexusRequesterUserId);
+            }
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -115,12 +140,13 @@ export const EventApiAxiosParamCreator = function (configuration?: Configuration
          * 
          * @summary Get an event by ID
          * @param {string} eventId 
+         * @param {string} [xProximaNexusRequesterUserId] ID of the user searching for events. If set, 401 may be returned if the user cannot view the event, otherwise requesterConnection will be set on the result.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        findOne: async (eventId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        get: async (eventId: string, xProximaNexusRequesterUserId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'eventId' is not null or undefined
-            assertParamExists('findOne', 'eventId', eventId)
+            assertParamExists('get', 'eventId', eventId)
             const localVarPath = `/event/{eventId}`
                 .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -134,42 +160,14 @@ export const EventApiAxiosParamCreator = function (configuration?: Configuration
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication api_key required
+            await setApiKeyToObject(localVarHeaderParameter, "X-Proxima-Nexus-Api-Key", configuration)
+
             localVarHeaderParameter['Accept'] = 'application/json';
 
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary Get attendees of an event
-         * @param {string} eventId 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getAttendees: async (eventId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'eventId' is not null or undefined
-            assertParamExists('getAttendees', 'eventId', eventId)
-            const localVarPath = `/event/{eventId}/attendees`
-                .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
+            if (xProximaNexusRequesterUserId != null) {
+                localVarHeaderParameter['X-Proxima-Nexus-Requester-User-Id'] = String(xProximaNexusRequesterUserId);
             }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            localVarHeaderParameter['Accept'] = 'application/json';
-
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -183,10 +181,11 @@ export const EventApiAxiosParamCreator = function (configuration?: Configuration
          * 
          * @summary Get a batch of events by IDs
          * @param {GetEventsDto} getEventsDto 
+         * @param {string} [xProximaNexusRequesterUserId] ID of the user getting a batch of events. If set, events will be filtered to only include events that the user can see, and requesterConnection will be set on the results.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getBatch: async (getEventsDto: GetEventsDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getBatch: async (getEventsDto: GetEventsDto, xProximaNexusRequesterUserId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'getEventsDto' is not null or undefined
             assertParamExists('getBatch', 'getEventsDto', getEventsDto)
             const localVarPath = `/event/batch`;
@@ -201,9 +200,15 @@ export const EventApiAxiosParamCreator = function (configuration?: Configuration
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication api_key required
+            await setApiKeyToObject(localVarHeaderParameter, "X-Proxima-Nexus-Api-Key", configuration)
+
             localVarHeaderParameter['Content-Type'] = 'application/json';
             localVarHeaderParameter['Accept'] = 'application/json';
 
+            if (xProximaNexusRequesterUserId != null) {
+                localVarHeaderParameter['X-Proxima-Nexus-Requester-User-Id'] = String(xProximaNexusRequesterUserId);
+            }
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -216,9 +221,55 @@ export const EventApiAxiosParamCreator = function (configuration?: Configuration
         },
         /**
          * 
+         * @summary Get connections of an event
+         * @param {string} eventId 
+         * @param {Array<EventControllerGetConnectionsTypeEnum>} [type] Filter connections by type. Can be a single type or multiple types (comma-separated or array)
+         * @param {string} [xProximaNexusRequesterUserId] ID of the user getting connections of the event. If set, 401 may be returned if the user cannot view the event connections.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getConnections: async (eventId: string, type?: Array<EventControllerGetConnectionsTypeEnum>, xProximaNexusRequesterUserId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'eventId' is not null or undefined
+            assertParamExists('getConnections', 'eventId', eventId)
+            const localVarPath = `/event/{eventId}/connections`
+                .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication api_key required
+            await setApiKeyToObject(localVarHeaderParameter, "X-Proxima-Nexus-Api-Key", configuration)
+
+            if (type) {
+                localVarQueryParameter['type'] = type;
+            }
+
+            localVarHeaderParameter['Accept'] = 'application/json';
+
+            if (xProximaNexusRequesterUserId != null) {
+                localVarHeaderParameter['X-Proxima-Nexus-Requester-User-Id'] = String(xProximaNexusRequesterUserId);
+            }
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary Delete an event
          * @param {string} eventId 
-         * @param {string} xProximaNexusRequesterUserId Requester user ID
+         * @param {string} xProximaNexusRequesterUserId ID of the user deleting the event
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -240,6 +291,9 @@ export const EventApiAxiosParamCreator = function (configuration?: Configuration
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication api_key required
+            await setApiKeyToObject(localVarHeaderParameter, "X-Proxima-Nexus-Api-Key", configuration)
+
 
             if (xProximaNexusRequesterUserId != null) {
                 localVarHeaderParameter['X-Proxima-Nexus-Requester-User-Id'] = String(xProximaNexusRequesterUserId);
@@ -247,6 +301,57 @@ export const EventApiAxiosParamCreator = function (configuration?: Configuration
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Remove an attendee from an event
+         * @param {string} eventId 
+         * @param {string} userId 
+         * @param {string} xProximaNexusRequesterUserId ID of the user removing an attendee from the event
+         * @param {MutateEventEntityConnectionDto} mutateEventEntityConnectionDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        removeConnection: async (eventId: string, userId: string, xProximaNexusRequesterUserId: string, mutateEventEntityConnectionDto: MutateEventEntityConnectionDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'eventId' is not null or undefined
+            assertParamExists('removeConnection', 'eventId', eventId)
+            // verify required parameter 'userId' is not null or undefined
+            assertParamExists('removeConnection', 'userId', userId)
+            // verify required parameter 'xProximaNexusRequesterUserId' is not null or undefined
+            assertParamExists('removeConnection', 'xProximaNexusRequesterUserId', xProximaNexusRequesterUserId)
+            // verify required parameter 'mutateEventEntityConnectionDto' is not null or undefined
+            assertParamExists('removeConnection', 'mutateEventEntityConnectionDto', mutateEventEntityConnectionDto)
+            const localVarPath = `/event/{eventId}/connection/{userId}`
+                .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)))
+                .replace(`{${"userId"}}`, encodeURIComponent(String(userId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication api_key required
+            await setApiKeyToObject(localVarHeaderParameter, "X-Proxima-Nexus-Api-Key", configuration)
+
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            if (xProximaNexusRequesterUserId != null) {
+                localVarHeaderParameter['X-Proxima-Nexus-Requester-User-Id'] = String(xProximaNexusRequesterUserId);
+            }
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(mutateEventEntityConnectionDto, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -265,10 +370,11 @@ export const EventApiAxiosParamCreator = function (configuration?: Configuration
          * @param {number} [minLongitude] Minimum longitude for bounding box
          * @param {number} [maxLongitude] Maximum longitude for bounding box
          * @param {number} [limit] Limit results (1-1000)
+         * @param {string} [xProximaNexusRequesterUserId] ID of the user searching for events. If set, events will be filtered to only include events that the user can see, and requesterConnection will be set on the results.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        search: async (displayName?: string, latitude?: number, longitude?: number, radius?: number, minLatitude?: number, maxLatitude?: number, minLongitude?: number, maxLongitude?: number, limit?: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        search: async (displayName?: string, latitude?: number, longitude?: number, radius?: number, minLatitude?: number, maxLatitude?: number, minLongitude?: number, maxLongitude?: number, limit?: number, xProximaNexusRequesterUserId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/event`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -280,6 +386,9 @@ export const EventApiAxiosParamCreator = function (configuration?: Configuration
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            // authentication api_key required
+            await setApiKeyToObject(localVarHeaderParameter, "X-Proxima-Nexus-Api-Key", configuration)
 
             if (displayName !== undefined) {
                 localVarQueryParameter['displayName'] = displayName;
@@ -319,6 +428,9 @@ export const EventApiAxiosParamCreator = function (configuration?: Configuration
 
             localVarHeaderParameter['Accept'] = 'application/json';
 
+            if (xProximaNexusRequesterUserId != null) {
+                localVarHeaderParameter['X-Proxima-Nexus-Requester-User-Id'] = String(xProximaNexusRequesterUserId);
+            }
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -332,13 +444,16 @@ export const EventApiAxiosParamCreator = function (configuration?: Configuration
          * 
          * @summary Update an event
          * @param {string} eventId 
+         * @param {string} xProximaNexusRequesterUserId ID of the user updating the event
          * @param {UpdateEventDto} updateEventDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        update: async (eventId: string, updateEventDto: UpdateEventDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        update: async (eventId: string, xProximaNexusRequesterUserId: string, updateEventDto: UpdateEventDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'eventId' is not null or undefined
             assertParamExists('update', 'eventId', eventId)
+            // verify required parameter 'xProximaNexusRequesterUserId' is not null or undefined
+            assertParamExists('update', 'xProximaNexusRequesterUserId', xProximaNexusRequesterUserId)
             // verify required parameter 'updateEventDto' is not null or undefined
             assertParamExists('update', 'updateEventDto', updateEventDto)
             const localVarPath = `/event/{eventId}`
@@ -354,9 +469,15 @@ export const EventApiAxiosParamCreator = function (configuration?: Configuration
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication api_key required
+            await setApiKeyToObject(localVarHeaderParameter, "X-Proxima-Nexus-Api-Key", configuration)
+
             localVarHeaderParameter['Content-Type'] = 'application/json';
             localVarHeaderParameter['Accept'] = 'application/json';
 
+            if (xProximaNexusRequesterUserId != null) {
+                localVarHeaderParameter['X-Proxima-Nexus-Requester-User-Id'] = String(xProximaNexusRequesterUserId);
+            }
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -381,24 +502,27 @@ export const EventApiFp = function(configuration?: Configuration) {
          * @summary Add an attendee to an event
          * @param {string} eventId 
          * @param {string} userId 
+         * @param {string} xProximaNexusRequesterUserId ID of the user removing an attendee from the event
+         * @param {MutateEventEntityConnectionDto} mutateEventEntityConnectionDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async addAttendee(eventId: string, userId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EntityConnectionDto>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.addAttendee(eventId, userId, options);
+        async addConnection(eventId: string, userId: string, xProximaNexusRequesterUserId: string, mutateEventEntityConnectionDto: MutateEventEntityConnectionDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EntityConnectionDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.addConnection(eventId, userId, xProximaNexusRequesterUserId, mutateEventEntityConnectionDto, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['EventApi.addAttendee']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['EventApi.addConnection']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
-         * @summary Create an event
+         * @summary Create an event. Owner will be the user creating the event or the group associated with the event (if set)
+         * @param {string} xProximaNexusRequesterUserId ID of the user creating the event
          * @param {CreateEventDto} createEventDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async create(createEventDto: CreateEventDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<string>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.create(createEventDto, options);
+        async create(xProximaNexusRequesterUserId: string, createEventDto: CreateEventDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<string>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.create(xProximaNexusRequesterUserId, createEventDto, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['EventApi.create']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -407,46 +531,50 @@ export const EventApiFp = function(configuration?: Configuration) {
          * 
          * @summary Get an event by ID
          * @param {string} eventId 
+         * @param {string} [xProximaNexusRequesterUserId] ID of the user searching for events. If set, 401 may be returned if the user cannot view the event, otherwise requesterConnection will be set on the result.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async findOne(eventId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EventDto>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.findOne(eventId, options);
+        async get(eventId: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EventDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.get(eventId, xProximaNexusRequesterUserId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['EventApi.findOne']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
-        /**
-         * 
-         * @summary Get attendees of an event
-         * @param {string} eventId 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async getAttendees(eventId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<UserEntityConnectionDto>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getAttendees(eventId, options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['EventApi.getAttendees']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['EventApi.get']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
          * @summary Get a batch of events by IDs
          * @param {GetEventsDto} getEventsDto 
+         * @param {string} [xProximaNexusRequesterUserId] ID of the user getting a batch of events. If set, events will be filtered to only include events that the user can see, and requesterConnection will be set on the results.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getBatch(getEventsDto: GetEventsDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<EventDto>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getBatch(getEventsDto, options);
+        async getBatch(getEventsDto: GetEventsDto, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<EventDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getBatch(getEventsDto, xProximaNexusRequesterUserId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['EventApi.getBatch']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
+         * @summary Get connections of an event
+         * @param {string} eventId 
+         * @param {Array<EventControllerGetConnectionsTypeEnum>} [type] Filter connections by type. Can be a single type or multiple types (comma-separated or array)
+         * @param {string} [xProximaNexusRequesterUserId] ID of the user getting connections of the event. If set, 401 may be returned if the user cannot view the event connections.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getConnections(eventId: string, type?: Array<EventControllerGetConnectionsTypeEnum>, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<UserEntityConnectionDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getConnections(eventId, type, xProximaNexusRequesterUserId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['EventApi.getConnections']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
          * @summary Delete an event
          * @param {string} eventId 
-         * @param {string} xProximaNexusRequesterUserId Requester user ID
+         * @param {string} xProximaNexusRequesterUserId ID of the user deleting the event
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -454,6 +582,22 @@ export const EventApiFp = function(configuration?: Configuration) {
             const localVarAxiosArgs = await localVarAxiosParamCreator.remove(eventId, xProximaNexusRequesterUserId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['EventApi.remove']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary Remove an attendee from an event
+         * @param {string} eventId 
+         * @param {string} userId 
+         * @param {string} xProximaNexusRequesterUserId ID of the user removing an attendee from the event
+         * @param {MutateEventEntityConnectionDto} mutateEventEntityConnectionDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async removeConnection(eventId: string, userId: string, xProximaNexusRequesterUserId: string, mutateEventEntityConnectionDto: MutateEventEntityConnectionDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.removeConnection(eventId, userId, xProximaNexusRequesterUserId, mutateEventEntityConnectionDto, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['EventApi.removeConnection']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -468,11 +612,12 @@ export const EventApiFp = function(configuration?: Configuration) {
          * @param {number} [minLongitude] Minimum longitude for bounding box
          * @param {number} [maxLongitude] Maximum longitude for bounding box
          * @param {number} [limit] Limit results (1-1000)
+         * @param {string} [xProximaNexusRequesterUserId] ID of the user searching for events. If set, events will be filtered to only include events that the user can see, and requesterConnection will be set on the results.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async search(displayName?: string, latitude?: number, longitude?: number, radius?: number, minLatitude?: number, maxLatitude?: number, minLongitude?: number, maxLongitude?: number, limit?: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<EventDto>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.search(displayName, latitude, longitude, radius, minLatitude, maxLatitude, minLongitude, maxLongitude, limit, options);
+        async search(displayName?: string, latitude?: number, longitude?: number, radius?: number, minLatitude?: number, maxLatitude?: number, minLongitude?: number, maxLongitude?: number, limit?: number, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<EventDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.search(displayName, latitude, longitude, radius, minLatitude, maxLatitude, minLongitude, maxLongitude, limit, xProximaNexusRequesterUserId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['EventApi.search']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -481,12 +626,13 @@ export const EventApiFp = function(configuration?: Configuration) {
          * 
          * @summary Update an event
          * @param {string} eventId 
+         * @param {string} xProximaNexusRequesterUserId ID of the user updating the event
          * @param {UpdateEventDto} updateEventDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async update(eventId: string, updateEventDto: UpdateEventDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<string>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.update(eventId, updateEventDto, options);
+        async update(eventId: string, xProximaNexusRequesterUserId: string, updateEventDto: UpdateEventDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<string>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.update(eventId, xProximaNexusRequesterUserId, updateEventDto, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['EventApi.update']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -505,62 +651,82 @@ export const EventApiFactory = function (configuration?: Configuration, basePath
          * @summary Add an attendee to an event
          * @param {string} eventId 
          * @param {string} userId 
+         * @param {string} xProximaNexusRequesterUserId ID of the user removing an attendee from the event
+         * @param {MutateEventEntityConnectionDto} mutateEventEntityConnectionDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        addAttendee(eventId: string, userId: string, options?: RawAxiosRequestConfig): AxiosPromise<EntityConnectionDto> {
-            return localVarFp.addAttendee(eventId, userId, options).then((request) => request(axios, basePath));
+        addConnection(eventId: string, userId: string, xProximaNexusRequesterUserId: string, mutateEventEntityConnectionDto: MutateEventEntityConnectionDto, options?: RawAxiosRequestConfig): AxiosPromise<EntityConnectionDto> {
+            return localVarFp.addConnection(eventId, userId, xProximaNexusRequesterUserId, mutateEventEntityConnectionDto, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @summary Create an event
+         * @summary Create an event. Owner will be the user creating the event or the group associated with the event (if set)
+         * @param {string} xProximaNexusRequesterUserId ID of the user creating the event
          * @param {CreateEventDto} createEventDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        create(createEventDto: CreateEventDto, options?: RawAxiosRequestConfig): AxiosPromise<string> {
-            return localVarFp.create(createEventDto, options).then((request) => request(axios, basePath));
+        create(xProximaNexusRequesterUserId: string, createEventDto: CreateEventDto, options?: RawAxiosRequestConfig): AxiosPromise<string> {
+            return localVarFp.create(xProximaNexusRequesterUserId, createEventDto, options).then((request) => request(axios, basePath));
         },
         /**
          * 
          * @summary Get an event by ID
          * @param {string} eventId 
+         * @param {string} [xProximaNexusRequesterUserId] ID of the user searching for events. If set, 401 may be returned if the user cannot view the event, otherwise requesterConnection will be set on the result.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        findOne(eventId: string, options?: RawAxiosRequestConfig): AxiosPromise<EventDto> {
-            return localVarFp.findOne(eventId, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary Get attendees of an event
-         * @param {string} eventId 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getAttendees(eventId: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<UserEntityConnectionDto>> {
-            return localVarFp.getAttendees(eventId, options).then((request) => request(axios, basePath));
+        get(eventId: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): AxiosPromise<EventDto> {
+            return localVarFp.get(eventId, xProximaNexusRequesterUserId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
          * @summary Get a batch of events by IDs
          * @param {GetEventsDto} getEventsDto 
+         * @param {string} [xProximaNexusRequesterUserId] ID of the user getting a batch of events. If set, events will be filtered to only include events that the user can see, and requesterConnection will be set on the results.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getBatch(getEventsDto: GetEventsDto, options?: RawAxiosRequestConfig): AxiosPromise<Array<EventDto>> {
-            return localVarFp.getBatch(getEventsDto, options).then((request) => request(axios, basePath));
+        getBatch(getEventsDto: GetEventsDto, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<EventDto>> {
+            return localVarFp.getBatch(getEventsDto, xProximaNexusRequesterUserId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Get connections of an event
+         * @param {string} eventId 
+         * @param {Array<EventControllerGetConnectionsTypeEnum>} [type] Filter connections by type. Can be a single type or multiple types (comma-separated or array)
+         * @param {string} [xProximaNexusRequesterUserId] ID of the user getting connections of the event. If set, 401 may be returned if the user cannot view the event connections.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getConnections(eventId: string, type?: Array<EventControllerGetConnectionsTypeEnum>, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<UserEntityConnectionDto>> {
+            return localVarFp.getConnections(eventId, type, xProximaNexusRequesterUserId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
          * @summary Delete an event
          * @param {string} eventId 
-         * @param {string} xProximaNexusRequesterUserId Requester user ID
+         * @param {string} xProximaNexusRequesterUserId ID of the user deleting the event
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
         remove(eventId: string, xProximaNexusRequesterUserId: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
             return localVarFp.remove(eventId, xProximaNexusRequesterUserId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Remove an attendee from an event
+         * @param {string} eventId 
+         * @param {string} userId 
+         * @param {string} xProximaNexusRequesterUserId ID of the user removing an attendee from the event
+         * @param {MutateEventEntityConnectionDto} mutateEventEntityConnectionDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        removeConnection(eventId: string, userId: string, xProximaNexusRequesterUserId: string, mutateEventEntityConnectionDto: MutateEventEntityConnectionDto, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.removeConnection(eventId, userId, xProximaNexusRequesterUserId, mutateEventEntityConnectionDto, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -574,22 +740,24 @@ export const EventApiFactory = function (configuration?: Configuration, basePath
          * @param {number} [minLongitude] Minimum longitude for bounding box
          * @param {number} [maxLongitude] Maximum longitude for bounding box
          * @param {number} [limit] Limit results (1-1000)
+         * @param {string} [xProximaNexusRequesterUserId] ID of the user searching for events. If set, events will be filtered to only include events that the user can see, and requesterConnection will be set on the results.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        search(displayName?: string, latitude?: number, longitude?: number, radius?: number, minLatitude?: number, maxLatitude?: number, minLongitude?: number, maxLongitude?: number, limit?: number, options?: RawAxiosRequestConfig): AxiosPromise<Array<EventDto>> {
-            return localVarFp.search(displayName, latitude, longitude, radius, minLatitude, maxLatitude, minLongitude, maxLongitude, limit, options).then((request) => request(axios, basePath));
+        search(displayName?: string, latitude?: number, longitude?: number, radius?: number, minLatitude?: number, maxLatitude?: number, minLongitude?: number, maxLongitude?: number, limit?: number, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<EventDto>> {
+            return localVarFp.search(displayName, latitude, longitude, radius, minLatitude, maxLatitude, minLongitude, maxLongitude, limit, xProximaNexusRequesterUserId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
          * @summary Update an event
          * @param {string} eventId 
+         * @param {string} xProximaNexusRequesterUserId ID of the user updating the event
          * @param {UpdateEventDto} updateEventDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        update(eventId: string, updateEventDto: UpdateEventDto, options?: RawAxiosRequestConfig): AxiosPromise<string> {
-            return localVarFp.update(eventId, updateEventDto, options).then((request) => request(axios, basePath));
+        update(eventId: string, xProximaNexusRequesterUserId: string, updateEventDto: UpdateEventDto, options?: RawAxiosRequestConfig): AxiosPromise<string> {
+            return localVarFp.update(eventId, xProximaNexusRequesterUserId, updateEventDto, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -603,56 +771,75 @@ export interface EventApiInterface {
      * @summary Add an attendee to an event
      * @param {string} eventId 
      * @param {string} userId 
+     * @param {string} xProximaNexusRequesterUserId ID of the user removing an attendee from the event
+     * @param {MutateEventEntityConnectionDto} mutateEventEntityConnectionDto 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    addAttendee(eventId: string, userId: string, options?: RawAxiosRequestConfig): AxiosPromise<EntityConnectionDto>;
+    addConnection(eventId: string, userId: string, xProximaNexusRequesterUserId: string, mutateEventEntityConnectionDto: MutateEventEntityConnectionDto, options?: RawAxiosRequestConfig): AxiosPromise<EntityConnectionDto>;
 
     /**
      * 
-     * @summary Create an event
+     * @summary Create an event. Owner will be the user creating the event or the group associated with the event (if set)
+     * @param {string} xProximaNexusRequesterUserId ID of the user creating the event
      * @param {CreateEventDto} createEventDto 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    create(createEventDto: CreateEventDto, options?: RawAxiosRequestConfig): AxiosPromise<string>;
+    create(xProximaNexusRequesterUserId: string, createEventDto: CreateEventDto, options?: RawAxiosRequestConfig): AxiosPromise<string>;
 
     /**
      * 
      * @summary Get an event by ID
      * @param {string} eventId 
+     * @param {string} [xProximaNexusRequesterUserId] ID of the user searching for events. If set, 401 may be returned if the user cannot view the event, otherwise requesterConnection will be set on the result.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    findOne(eventId: string, options?: RawAxiosRequestConfig): AxiosPromise<EventDto>;
-
-    /**
-     * 
-     * @summary Get attendees of an event
-     * @param {string} eventId 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    getAttendees(eventId: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<UserEntityConnectionDto>>;
+    get(eventId: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): AxiosPromise<EventDto>;
 
     /**
      * 
      * @summary Get a batch of events by IDs
      * @param {GetEventsDto} getEventsDto 
+     * @param {string} [xProximaNexusRequesterUserId] ID of the user getting a batch of events. If set, events will be filtered to only include events that the user can see, and requesterConnection will be set on the results.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getBatch(getEventsDto: GetEventsDto, options?: RawAxiosRequestConfig): AxiosPromise<Array<EventDto>>;
+    getBatch(getEventsDto: GetEventsDto, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<EventDto>>;
+
+    /**
+     * 
+     * @summary Get connections of an event
+     * @param {string} eventId 
+     * @param {Array<EventControllerGetConnectionsTypeEnum>} [type] Filter connections by type. Can be a single type or multiple types (comma-separated or array)
+     * @param {string} [xProximaNexusRequesterUserId] ID of the user getting connections of the event. If set, 401 may be returned if the user cannot view the event connections.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getConnections(eventId: string, type?: Array<EventControllerGetConnectionsTypeEnum>, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<UserEntityConnectionDto>>;
 
     /**
      * 
      * @summary Delete an event
      * @param {string} eventId 
-     * @param {string} xProximaNexusRequesterUserId Requester user ID
+     * @param {string} xProximaNexusRequesterUserId ID of the user deleting the event
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     remove(eventId: string, xProximaNexusRequesterUserId: string, options?: RawAxiosRequestConfig): AxiosPromise<void>;
+
+    /**
+     * 
+     * @summary Remove an attendee from an event
+     * @param {string} eventId 
+     * @param {string} userId 
+     * @param {string} xProximaNexusRequesterUserId ID of the user removing an attendee from the event
+     * @param {MutateEventEntityConnectionDto} mutateEventEntityConnectionDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    removeConnection(eventId: string, userId: string, xProximaNexusRequesterUserId: string, mutateEventEntityConnectionDto: MutateEventEntityConnectionDto, options?: RawAxiosRequestConfig): AxiosPromise<void>;
 
     /**
      * 
@@ -666,20 +853,22 @@ export interface EventApiInterface {
      * @param {number} [minLongitude] Minimum longitude for bounding box
      * @param {number} [maxLongitude] Maximum longitude for bounding box
      * @param {number} [limit] Limit results (1-1000)
+     * @param {string} [xProximaNexusRequesterUserId] ID of the user searching for events. If set, events will be filtered to only include events that the user can see, and requesterConnection will be set on the results.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    search(displayName?: string, latitude?: number, longitude?: number, radius?: number, minLatitude?: number, maxLatitude?: number, minLongitude?: number, maxLongitude?: number, limit?: number, options?: RawAxiosRequestConfig): AxiosPromise<Array<EventDto>>;
+    search(displayName?: string, latitude?: number, longitude?: number, radius?: number, minLatitude?: number, maxLatitude?: number, minLongitude?: number, maxLongitude?: number, limit?: number, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<EventDto>>;
 
     /**
      * 
      * @summary Update an event
      * @param {string} eventId 
+     * @param {string} xProximaNexusRequesterUserId ID of the user updating the event
      * @param {UpdateEventDto} updateEventDto 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    update(eventId: string, updateEventDto: UpdateEventDto, options?: RawAxiosRequestConfig): AxiosPromise<string>;
+    update(eventId: string, xProximaNexusRequesterUserId: string, updateEventDto: UpdateEventDto, options?: RawAxiosRequestConfig): AxiosPromise<string>;
 
 }
 
@@ -692,67 +881,88 @@ export class EventApi extends BaseAPI implements EventApiInterface {
      * @summary Add an attendee to an event
      * @param {string} eventId 
      * @param {string} userId 
+     * @param {string} xProximaNexusRequesterUserId ID of the user removing an attendee from the event
+     * @param {MutateEventEntityConnectionDto} mutateEventEntityConnectionDto 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public addAttendee(eventId: string, userId: string, options?: RawAxiosRequestConfig) {
-        return EventApiFp(this.configuration).addAttendee(eventId, userId, options).then((request) => request(this.axios, this.basePath));
+    public addConnection(eventId: string, userId: string, xProximaNexusRequesterUserId: string, mutateEventEntityConnectionDto: MutateEventEntityConnectionDto, options?: RawAxiosRequestConfig) {
+        return EventApiFp(this.configuration).addConnection(eventId, userId, xProximaNexusRequesterUserId, mutateEventEntityConnectionDto, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
-     * @summary Create an event
+     * @summary Create an event. Owner will be the user creating the event or the group associated with the event (if set)
+     * @param {string} xProximaNexusRequesterUserId ID of the user creating the event
      * @param {CreateEventDto} createEventDto 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public create(createEventDto: CreateEventDto, options?: RawAxiosRequestConfig) {
-        return EventApiFp(this.configuration).create(createEventDto, options).then((request) => request(this.axios, this.basePath));
+    public create(xProximaNexusRequesterUserId: string, createEventDto: CreateEventDto, options?: RawAxiosRequestConfig) {
+        return EventApiFp(this.configuration).create(xProximaNexusRequesterUserId, createEventDto, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
      * @summary Get an event by ID
      * @param {string} eventId 
+     * @param {string} [xProximaNexusRequesterUserId] ID of the user searching for events. If set, 401 may be returned if the user cannot view the event, otherwise requesterConnection will be set on the result.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public findOne(eventId: string, options?: RawAxiosRequestConfig) {
-        return EventApiFp(this.configuration).findOne(eventId, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary Get attendees of an event
-     * @param {string} eventId 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    public getAttendees(eventId: string, options?: RawAxiosRequestConfig) {
-        return EventApiFp(this.configuration).getAttendees(eventId, options).then((request) => request(this.axios, this.basePath));
+    public get(eventId: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig) {
+        return EventApiFp(this.configuration).get(eventId, xProximaNexusRequesterUserId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
      * @summary Get a batch of events by IDs
      * @param {GetEventsDto} getEventsDto 
+     * @param {string} [xProximaNexusRequesterUserId] ID of the user getting a batch of events. If set, events will be filtered to only include events that the user can see, and requesterConnection will be set on the results.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public getBatch(getEventsDto: GetEventsDto, options?: RawAxiosRequestConfig) {
-        return EventApiFp(this.configuration).getBatch(getEventsDto, options).then((request) => request(this.axios, this.basePath));
+    public getBatch(getEventsDto: GetEventsDto, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig) {
+        return EventApiFp(this.configuration).getBatch(getEventsDto, xProximaNexusRequesterUserId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Get connections of an event
+     * @param {string} eventId 
+     * @param {Array<EventControllerGetConnectionsTypeEnum>} [type] Filter connections by type. Can be a single type or multiple types (comma-separated or array)
+     * @param {string} [xProximaNexusRequesterUserId] ID of the user getting connections of the event. If set, 401 may be returned if the user cannot view the event connections.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public getConnections(eventId: string, type?: Array<EventControllerGetConnectionsTypeEnum>, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig) {
+        return EventApiFp(this.configuration).getConnections(eventId, type, xProximaNexusRequesterUserId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
      * @summary Delete an event
      * @param {string} eventId 
-     * @param {string} xProximaNexusRequesterUserId Requester user ID
+     * @param {string} xProximaNexusRequesterUserId ID of the user deleting the event
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     public remove(eventId: string, xProximaNexusRequesterUserId: string, options?: RawAxiosRequestConfig) {
         return EventApiFp(this.configuration).remove(eventId, xProximaNexusRequesterUserId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Remove an attendee from an event
+     * @param {string} eventId 
+     * @param {string} userId 
+     * @param {string} xProximaNexusRequesterUserId ID of the user removing an attendee from the event
+     * @param {MutateEventEntityConnectionDto} mutateEventEntityConnectionDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public removeConnection(eventId: string, userId: string, xProximaNexusRequesterUserId: string, mutateEventEntityConnectionDto: MutateEventEntityConnectionDto, options?: RawAxiosRequestConfig) {
+        return EventApiFp(this.configuration).removeConnection(eventId, userId, xProximaNexusRequesterUserId, mutateEventEntityConnectionDto, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -767,23 +977,30 @@ export class EventApi extends BaseAPI implements EventApiInterface {
      * @param {number} [minLongitude] Minimum longitude for bounding box
      * @param {number} [maxLongitude] Maximum longitude for bounding box
      * @param {number} [limit] Limit results (1-1000)
+     * @param {string} [xProximaNexusRequesterUserId] ID of the user searching for events. If set, events will be filtered to only include events that the user can see, and requesterConnection will be set on the results.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public search(displayName?: string, latitude?: number, longitude?: number, radius?: number, minLatitude?: number, maxLatitude?: number, minLongitude?: number, maxLongitude?: number, limit?: number, options?: RawAxiosRequestConfig) {
-        return EventApiFp(this.configuration).search(displayName, latitude, longitude, radius, minLatitude, maxLatitude, minLongitude, maxLongitude, limit, options).then((request) => request(this.axios, this.basePath));
+    public search(displayName?: string, latitude?: number, longitude?: number, radius?: number, minLatitude?: number, maxLatitude?: number, minLongitude?: number, maxLongitude?: number, limit?: number, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig) {
+        return EventApiFp(this.configuration).search(displayName, latitude, longitude, radius, minLatitude, maxLatitude, minLongitude, maxLongitude, limit, xProximaNexusRequesterUserId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
      * @summary Update an event
      * @param {string} eventId 
+     * @param {string} xProximaNexusRequesterUserId ID of the user updating the event
      * @param {UpdateEventDto} updateEventDto 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public update(eventId: string, updateEventDto: UpdateEventDto, options?: RawAxiosRequestConfig) {
-        return EventApiFp(this.configuration).update(eventId, updateEventDto, options).then((request) => request(this.axios, this.basePath));
+    public update(eventId: string, xProximaNexusRequesterUserId: string, updateEventDto: UpdateEventDto, options?: RawAxiosRequestConfig) {
+        return EventApiFp(this.configuration).update(eventId, xProximaNexusRequesterUserId, updateEventDto, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
+export enum EventControllerGetConnectionsTypeEnum {
+    attendee = 'attendee',
+    admin = 'admin',
+    owner = 'owner'
+}

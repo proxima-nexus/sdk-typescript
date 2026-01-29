@@ -23,10 +23,6 @@ export interface CreateUserDto {
      */
     'displayName': string;
     /**
-     * User ID of the requester
-     */
-    'requesterUserId': string;
-    /**
      * Visibility of the entity
      */
     'visibility': CreateUserDtoVisibilityEnum;

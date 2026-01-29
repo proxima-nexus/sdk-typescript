@@ -19,10 +19,6 @@ import type { LocationDto } from './location-dto';
 
 export interface UpdateEventDto {
     /**
-     * User ID of the requester
-     */
-    'requesterUserId': string;
-    /**
      * Visibility of the entity
      */
     'visibility'?: UpdateEventDtoVisibilityEnum;
@@ -54,6 +50,10 @@ export interface UpdateEventDto {
      * Event type
      */
     'type': string;
+    /**
+     * Maximum number of attendees allowed (null = unlimited)
+     */
+    'maxNumAttendees'?: number;
 }
 
 export enum UpdateEventDtoVisibilityEnum {

@@ -19,10 +19,6 @@ import type { LocationDto } from './location-dto';
 
 export interface UpdateUserDto {
     /**
-     * User ID of the requester
-     */
-    'requesterUserId': string;
-    /**
      * Visibility of the entity
      */
     'visibility'?: UpdateUserDtoVisibilityEnum;

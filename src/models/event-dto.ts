@@ -15,6 +15,9 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
+import type { EntityConnectionDto } from './entity-connection-dto';
+// May contain unused imports in some cases
+// @ts-ignore
 import type { LocationDto } from './location-dto';
 
 export interface EventDto {
@@ -22,10 +25,6 @@ export interface EventDto {
      * Unique identifier for the entity
      */
     'entityId'?: string;
-    /**
-     * Tenant identifier the entity belongs to
-     */
-    'tenantId'?: string;
     /**
      * Display name of the entity
      */
@@ -55,6 +54,10 @@ export interface EventDto {
      */
     'location'?: LocationDto;
     /**
+     * Connection to the requester
+     */
+    'requesterConnection'?: EntityConnectionDto;
+    /**
      * Start time (ISO 8601)
      */
     'startTime': string;
@@ -70,6 +73,14 @@ export interface EventDto {
      * Identifier of associated group which owns the event. Owners/admins of the group will be admins of the event.
      */
     'associatedGroupId'?: string;
+    /**
+     * Number of active attendees
+     */
+    'numAttendees'?: number;
+    /**
+     * Maximum number of attendees allowed (null = unlimited)
+     */
+    'maxNumAttendees'?: number;
 }
 
 export enum EventDtoVisibilityEnum {

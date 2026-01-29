@@ -28,6 +28,10 @@ export interface UserEntityConnectionDto {
      */
     'state': UserEntityConnectionDtoStateEnum;
     /**
+     * Connection type
+     */
+    'type': UserEntityConnectionDtoTypeEnum;
+    /**
      * User ID
      */
     'userId': string;
@@ -36,7 +40,19 @@ export interface UserEntityConnectionDto {
 export enum UserEntityConnectionDtoStateEnum {
     requested = 'requested',
     active = 'active',
-    rejected = 'rejected'
+    rejected = 'rejected',
+    blocked = 'blocked'
+}
+export enum UserEntityConnectionDtoTypeEnum {
+    attendee = 'attendee',
+    admin = 'admin',
+    owner = 'owner',
+    member = 'member',
+    admin2 = 'admin',
+    owner2 = 'owner',
+    friend = 'friend',
+    blocked = 'blocked',
+    none = 'none'
 }
 
 

@@ -32,6 +32,8 @@ import type { GetUsersDto } from '../models';
 // @ts-ignore
 import type { GroupEntityConnectionDto } from '../models';
 // @ts-ignore
+import type { MutateUserConnectionDto } from '../models';
+// @ts-ignore
 import type { MutateUserResponseDto } from '../models';
 // @ts-ignore
 import type { UpdateUserDto } from '../models';
@@ -44,47 +46,6 @@ import type { UserEntityConnectionDto } from '../models';
  */
 export const UserApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
-        /**
-         * 
-         * @summary Add a friend to a user
-         * @param {string} userId 
-         * @param {string} friendUserId 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        addFriend: async (userId: string, friendUserId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'userId' is not null or undefined
-            assertParamExists('addFriend', 'userId', userId)
-            // verify required parameter 'friendUserId' is not null or undefined
-            assertParamExists('addFriend', 'friendUserId', friendUserId)
-            const localVarPath = `/user/{userId}/friends/{friendUserId}`
-                .replace(`{${"userId"}}`, encodeURIComponent(String(userId)))
-                .replace(`{${"friendUserId"}}`, encodeURIComponent(String(friendUserId)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication api_key required
-            await setApiKeyToObject(localVarHeaderParameter, "X-Proxima-Nexus-Api-Key", configuration)
-
-            localVarHeaderParameter['Accept'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
         /**
          * 
          * @summary Create a user
@@ -124,15 +85,69 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
             };
         },
         /**
-         * 
-         * @summary Get a user by ID
+         * Remove a friend connection or unblock a user. For BLOCKED connections, only the user who initiated the block can unblock.
+         * @summary Delete a connection with another user
          * @param {string} userId 
+         * @param {string} targetUserId 
+         * @param {UserControllerDeleteConnectionTypeEnum} type Type of connection to delete
+         * @param {string} xProximaNexusRequesterUserId ID of the user deleting the connection
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        findOne: async (userId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        deleteConnection: async (userId: string, targetUserId: string, type: UserControllerDeleteConnectionTypeEnum, xProximaNexusRequesterUserId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'userId' is not null or undefined
-            assertParamExists('findOne', 'userId', userId)
+            assertParamExists('deleteConnection', 'userId', userId)
+            // verify required parameter 'targetUserId' is not null or undefined
+            assertParamExists('deleteConnection', 'targetUserId', targetUserId)
+            // verify required parameter 'type' is not null or undefined
+            assertParamExists('deleteConnection', 'type', type)
+            // verify required parameter 'xProximaNexusRequesterUserId' is not null or undefined
+            assertParamExists('deleteConnection', 'xProximaNexusRequesterUserId', xProximaNexusRequesterUserId)
+            const localVarPath = `/user/{userId}/connections/{targetUserId}`
+                .replace(`{${"userId"}}`, encodeURIComponent(String(userId)))
+                .replace(`{${"targetUserId"}}`, encodeURIComponent(String(targetUserId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication api_key required
+            await setApiKeyToObject(localVarHeaderParameter, "X-Proxima-Nexus-Api-Key", configuration)
+
+            if (type !== undefined) {
+                localVarQueryParameter['type'] = type;
+            }
+
+
+            if (xProximaNexusRequesterUserId != null) {
+                localVarHeaderParameter['X-Proxima-Nexus-Requester-User-Id'] = String(xProximaNexusRequesterUserId);
+            }
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Get a user by ID
+         * @param {string} userId 
+         * @param {string} [xProximaNexusRequesterUserId] ID of the user getting a user by ID. If set, 401 may be returned if the user cannot view the user, otherwise requesterConnection will be set on the result.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        get: async (userId: string, xProximaNexusRequesterUserId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'userId' is not null or undefined
+            assertParamExists('get', 'userId', userId)
             const localVarPath = `/user/{userId}`
                 .replace(`{${"userId"}}`, encodeURIComponent(String(userId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -151,6 +166,9 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
 
             localVarHeaderParameter['Accept'] = 'application/json';
 
+            if (xProximaNexusRequesterUserId != null) {
+                localVarHeaderParameter['X-Proxima-Nexus-Requester-User-Id'] = String(xProximaNexusRequesterUserId);
+            }
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -164,10 +182,11 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
          * 
          * @summary Get a batch of users by IDs
          * @param {GetUsersDto} getUsersDto 
+         * @param {string} [xProximaNexusRequesterUserId] ID of the user getting a batch of users. If set, users will be filtered to only include users that the user can see, and requesterConnection will be set on the results.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getBatch: async (getUsersDto: GetUsersDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getBatch: async (getUsersDto: GetUsersDto, xProximaNexusRequesterUserId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'getUsersDto' is not null or undefined
             assertParamExists('getBatch', 'getUsersDto', getUsersDto)
             const localVarPath = `/user/batch`;
@@ -188,6 +207,9 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
             localVarHeaderParameter['Content-Type'] = 'application/json';
             localVarHeaderParameter['Accept'] = 'application/json';
 
+            if (xProximaNexusRequesterUserId != null) {
+                localVarHeaderParameter['X-Proxima-Nexus-Requester-User-Id'] = String(xProximaNexusRequesterUserId);
+            }
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -199,13 +221,65 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
             };
         },
         /**
-         * 
-         * @summary Get events of a user
+         * Get user connections with optional type and state filters. Visibility rules apply: HIDDEN/CONNECTIONS users only show connections to self or connected users. Only the user themselves can see BLOCKED connections or non-ACTIVE states.
+         * @summary Get connections of a user
          * @param {string} userId 
+         * @param {Array<UserControllerGetConnectionsStateEnum>} [state] Filter connections by state. Can be multiple values. Non-self requesters can only see ACTIVE connections.
+         * @param {Array<UserControllerGetConnectionsTypeEnum>} [type] Filter connections by type. Can be multiple values.
+         * @param {string} [xProximaNexusRequesterUserId] ID of the user viewing connections. Required for non-PUBLIC users. Only the user themselves can view BLOCKED or non-ACTIVE connections.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getEvents: async (userId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getConnections: async (userId: string, state?: Array<UserControllerGetConnectionsStateEnum>, type?: Array<UserControllerGetConnectionsTypeEnum>, xProximaNexusRequesterUserId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'userId' is not null or undefined
+            assertParamExists('getConnections', 'userId', userId)
+            const localVarPath = `/user/{userId}/connections`
+                .replace(`{${"userId"}}`, encodeURIComponent(String(userId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication api_key required
+            await setApiKeyToObject(localVarHeaderParameter, "X-Proxima-Nexus-Api-Key", configuration)
+
+            if (state) {
+                localVarQueryParameter['state'] = state;
+            }
+
+            if (type) {
+                localVarQueryParameter['type'] = type;
+            }
+
+            localVarHeaderParameter['Accept'] = 'application/json';
+
+            if (xProximaNexusRequesterUserId != null) {
+                localVarHeaderParameter['X-Proxima-Nexus-Requester-User-Id'] = String(xProximaNexusRequesterUserId);
+            }
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Get events of a user
+         * @param {string} userId 
+         * @param {string} [xProximaNexusRequesterUserId] ID of the user getting events of a user. If set, events will be filtered to only include events that the user can see, and requesterConnection will be set on the results.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getEvents: async (userId: string, xProximaNexusRequesterUserId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'userId' is not null or undefined
             assertParamExists('getEvents', 'userId', userId)
             const localVarPath = `/user/{userId}/events`
@@ -226,43 +300,9 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
 
             localVarHeaderParameter['Accept'] = 'application/json';
 
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary Get friends of a user
-         * @param {string} userId 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getFriends: async (userId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'userId' is not null or undefined
-            assertParamExists('getFriends', 'userId', userId)
-            const localVarPath = `/user/{userId}/friends`
-                .replace(`{${"userId"}}`, encodeURIComponent(String(userId)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
+            if (xProximaNexusRequesterUserId != null) {
+                localVarHeaderParameter['X-Proxima-Nexus-Requester-User-Id'] = String(xProximaNexusRequesterUserId);
             }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication api_key required
-            await setApiKeyToObject(localVarHeaderParameter, "X-Proxima-Nexus-Api-Key", configuration)
-
-            localVarHeaderParameter['Accept'] = 'application/json';
-
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -276,10 +316,11 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
          * 
          * @summary Get groups of a user
          * @param {string} userId 
+         * @param {string} [xProximaNexusRequesterUserId] ID of the user getting groups of a user. If set, groups will be filtered to only include groups that the user can see, and requesterConnection will be set on the results.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getGroups: async (userId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getGroups: async (userId: string, xProximaNexusRequesterUserId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'userId' is not null or undefined
             assertParamExists('getGroups', 'userId', userId)
             const localVarPath = `/user/{userId}/groups`
@@ -300,6 +341,9 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
 
             localVarHeaderParameter['Accept'] = 'application/json';
 
+            if (xProximaNexusRequesterUserId != null) {
+                localVarHeaderParameter['X-Proxima-Nexus-Requester-User-Id'] = String(xProximaNexusRequesterUserId);
+            }
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -310,15 +354,70 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
             };
         },
         /**
-         * 
-         * @summary Delete a user
+         * Create a friend request, accept a pending request, or block a user. For FRIEND type: creates REQUESTED state if no connection exists; target user can accept by setting state to ACTIVE. For BLOCKED type: creates a mutual block.
+         * @summary Create or update a connection with another user
          * @param {string} userId 
+         * @param {string} targetUserId 
+         * @param {string} xProximaNexusRequesterUserId ID of the user creating/modifying the connection (must match userId)
+         * @param {MutateUserConnectionDto} mutateUserConnectionDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        remove: async (userId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        putConnection: async (userId: string, targetUserId: string, xProximaNexusRequesterUserId: string, mutateUserConnectionDto: MutateUserConnectionDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'userId' is not null or undefined
+            assertParamExists('putConnection', 'userId', userId)
+            // verify required parameter 'targetUserId' is not null or undefined
+            assertParamExists('putConnection', 'targetUserId', targetUserId)
+            // verify required parameter 'xProximaNexusRequesterUserId' is not null or undefined
+            assertParamExists('putConnection', 'xProximaNexusRequesterUserId', xProximaNexusRequesterUserId)
+            // verify required parameter 'mutateUserConnectionDto' is not null or undefined
+            assertParamExists('putConnection', 'mutateUserConnectionDto', mutateUserConnectionDto)
+            const localVarPath = `/user/{userId}/connections/{targetUserId}`
+                .replace(`{${"userId"}}`, encodeURIComponent(String(userId)))
+                .replace(`{${"targetUserId"}}`, encodeURIComponent(String(targetUserId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication api_key required
+            await setApiKeyToObject(localVarHeaderParameter, "X-Proxima-Nexus-Api-Key", configuration)
+
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'application/json';
+
+            if (xProximaNexusRequesterUserId != null) {
+                localVarHeaderParameter['X-Proxima-Nexus-Requester-User-Id'] = String(xProximaNexusRequesterUserId);
+            }
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(mutateUserConnectionDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Delete a user
+         * @param {string} userId 
+         * @param {string} xProximaNexusRequesterUserId ID of the user deleting the user
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        remove: async (userId: string, xProximaNexusRequesterUserId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'userId' is not null or undefined
             assertParamExists('remove', 'userId', userId)
+            // verify required parameter 'xProximaNexusRequesterUserId' is not null or undefined
+            assertParamExists('remove', 'xProximaNexusRequesterUserId', xProximaNexusRequesterUserId)
             const localVarPath = `/user/{userId}`
                 .replace(`{${"userId"}}`, encodeURIComponent(String(userId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -336,46 +435,9 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
             await setApiKeyToObject(localVarHeaderParameter, "X-Proxima-Nexus-Api-Key", configuration)
 
 
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary Remove a friend from a user
-         * @param {string} userId 
-         * @param {string} friendUserId 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        removeFriend: async (userId: string, friendUserId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'userId' is not null or undefined
-            assertParamExists('removeFriend', 'userId', userId)
-            // verify required parameter 'friendUserId' is not null or undefined
-            assertParamExists('removeFriend', 'friendUserId', friendUserId)
-            const localVarPath = `/user/{userId}/friends/{friendUserId}`
-                .replace(`{${"userId"}}`, encodeURIComponent(String(userId)))
-                .replace(`{${"friendUserId"}}`, encodeURIComponent(String(friendUserId)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
+            if (xProximaNexusRequesterUserId != null) {
+                localVarHeaderParameter['X-Proxima-Nexus-Requester-User-Id'] = String(xProximaNexusRequesterUserId);
             }
-
-            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication api_key required
-            await setApiKeyToObject(localVarHeaderParameter, "X-Proxima-Nexus-Api-Key", configuration)
-
-
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -386,7 +448,7 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
             };
         },
         /**
-         * 
+         * Search for users. When requesterUserId is provided, HIDDEN users are filtered out unless the requester is connected to them, and users who have blocked the requester are also filtered out. When requesterUserId is not provided, all users are returned without visibility filtering.
          * @summary Search users
          * @param {string} [displayName] Display name search (ILIKE)
          * @param {number} [latitude] Latitude for radius search
@@ -397,10 +459,11 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
          * @param {number} [minLongitude] Minimum longitude for bounding box
          * @param {number} [maxLongitude] Maximum longitude for bounding box
          * @param {number} [limit] Limit results (1-1000)
+         * @param {string} [xProximaNexusRequesterUserId] ID of the user searching for users. If set, users will be filtered to only include users that the user can see, and requesterConnection will be set on the results.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        search: async (displayName?: string, latitude?: number, longitude?: number, radius?: number, minLatitude?: number, maxLatitude?: number, minLongitude?: number, maxLongitude?: number, limit?: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        search: async (displayName?: string, latitude?: number, longitude?: number, radius?: number, minLatitude?: number, maxLatitude?: number, minLongitude?: number, maxLongitude?: number, limit?: number, xProximaNexusRequesterUserId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/user`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -454,6 +517,9 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
 
             localVarHeaderParameter['Accept'] = 'application/json';
 
+            if (xProximaNexusRequesterUserId != null) {
+                localVarHeaderParameter['X-Proxima-Nexus-Requester-User-Id'] = String(xProximaNexusRequesterUserId);
+            }
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -467,13 +533,16 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
          * 
          * @summary Update a user
          * @param {string} userId 
+         * @param {string} xProximaNexusRequesterUserId ID of the user updating the user
          * @param {UpdateUserDto} updateUserDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        update: async (userId: string, updateUserDto: UpdateUserDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        update: async (userId: string, xProximaNexusRequesterUserId: string, updateUserDto: UpdateUserDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'userId' is not null or undefined
             assertParamExists('update', 'userId', userId)
+            // verify required parameter 'xProximaNexusRequesterUserId' is not null or undefined
+            assertParamExists('update', 'xProximaNexusRequesterUserId', xProximaNexusRequesterUserId)
             // verify required parameter 'updateUserDto' is not null or undefined
             assertParamExists('update', 'updateUserDto', updateUserDto)
             const localVarPath = `/user/{userId}`
@@ -495,6 +564,9 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
             localVarHeaderParameter['Content-Type'] = 'application/json';
             localVarHeaderParameter['Accept'] = 'application/json';
 
+            if (xProximaNexusRequesterUserId != null) {
+                localVarHeaderParameter['X-Proxima-Nexus-Requester-User-Id'] = String(xProximaNexusRequesterUserId);
+            }
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -516,20 +588,6 @@ export const UserApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
-         * @summary Add a friend to a user
-         * @param {string} userId 
-         * @param {string} friendUserId 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async addFriend(userId: string, friendUserId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EntityConnectionDto>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.addFriend(userId, friendUserId, options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['UserApi.addFriend']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
-        /**
-         * 
          * @summary Create a user
          * @param {CreateUserDto} createUserDto 
          * @param {*} [options] Override http request option.
@@ -542,99 +600,125 @@ export const UserApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * 
-         * @summary Get a user by ID
+         * Remove a friend connection or unblock a user. For BLOCKED connections, only the user who initiated the block can unblock.
+         * @summary Delete a connection with another user
          * @param {string} userId 
+         * @param {string} targetUserId 
+         * @param {UserControllerDeleteConnectionTypeEnum} type Type of connection to delete
+         * @param {string} xProximaNexusRequesterUserId ID of the user deleting the connection
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async findOne(userId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserDto>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.findOne(userId, options);
+        async deleteConnection(userId: string, targetUserId: string, type: UserControllerDeleteConnectionTypeEnum, xProximaNexusRequesterUserId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteConnection(userId, targetUserId, type, xProximaNexusRequesterUserId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['UserApi.findOne']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['UserApi.deleteConnection']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary Get a user by ID
+         * @param {string} userId 
+         * @param {string} [xProximaNexusRequesterUserId] ID of the user getting a user by ID. If set, 401 may be returned if the user cannot view the user, otherwise requesterConnection will be set on the result.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async get(userId: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.get(userId, xProximaNexusRequesterUserId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['UserApi.get']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
          * @summary Get a batch of users by IDs
          * @param {GetUsersDto} getUsersDto 
+         * @param {string} [xProximaNexusRequesterUserId] ID of the user getting a batch of users. If set, users will be filtered to only include users that the user can see, and requesterConnection will be set on the results.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getBatch(getUsersDto: GetUsersDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<UserDto>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getBatch(getUsersDto, options);
+        async getBatch(getUsersDto: GetUsersDto, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<UserDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getBatch(getUsersDto, xProximaNexusRequesterUserId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['UserApi.getBatch']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Get user connections with optional type and state filters. Visibility rules apply: HIDDEN/CONNECTIONS users only show connections to self or connected users. Only the user themselves can see BLOCKED connections or non-ACTIVE states.
+         * @summary Get connections of a user
+         * @param {string} userId 
+         * @param {Array<UserControllerGetConnectionsStateEnum>} [state] Filter connections by state. Can be multiple values. Non-self requesters can only see ACTIVE connections.
+         * @param {Array<UserControllerGetConnectionsTypeEnum>} [type] Filter connections by type. Can be multiple values.
+         * @param {string} [xProximaNexusRequesterUserId] ID of the user viewing connections. Required for non-PUBLIC users. Only the user themselves can view BLOCKED or non-ACTIVE connections.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getConnections(userId: string, state?: Array<UserControllerGetConnectionsStateEnum>, type?: Array<UserControllerGetConnectionsTypeEnum>, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<UserEntityConnectionDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getConnections(userId, state, type, xProximaNexusRequesterUserId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['UserApi.getConnections']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
          * @summary Get events of a user
          * @param {string} userId 
+         * @param {string} [xProximaNexusRequesterUserId] ID of the user getting events of a user. If set, events will be filtered to only include events that the user can see, and requesterConnection will be set on the results.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getEvents(userId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<EventEntityConnectionDto>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getEvents(userId, options);
+        async getEvents(userId: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<EventEntityConnectionDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getEvents(userId, xProximaNexusRequesterUserId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['UserApi.getEvents']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
-         * @summary Get friends of a user
+         * @summary Get groups of a user
          * @param {string} userId 
+         * @param {string} [xProximaNexusRequesterUserId] ID of the user getting groups of a user. If set, groups will be filtered to only include groups that the user can see, and requesterConnection will be set on the results.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getFriends(userId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<UserEntityConnectionDto>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getFriends(userId, options);
+        async getGroups(userId: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<GroupEntityConnectionDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getGroups(userId, xProximaNexusRequesterUserId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['UserApi.getFriends']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['UserApi.getGroups']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * 
-         * @summary Get groups of a user
+         * Create a friend request, accept a pending request, or block a user. For FRIEND type: creates REQUESTED state if no connection exists; target user can accept by setting state to ACTIVE. For BLOCKED type: creates a mutual block.
+         * @summary Create or update a connection with another user
          * @param {string} userId 
+         * @param {string} targetUserId 
+         * @param {string} xProximaNexusRequesterUserId ID of the user creating/modifying the connection (must match userId)
+         * @param {MutateUserConnectionDto} mutateUserConnectionDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getGroups(userId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<GroupEntityConnectionDto>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getGroups(userId, options);
+        async putConnection(userId: string, targetUserId: string, xProximaNexusRequesterUserId: string, mutateUserConnectionDto: MutateUserConnectionDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EntityConnectionDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.putConnection(userId, targetUserId, xProximaNexusRequesterUserId, mutateUserConnectionDto, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['UserApi.getGroups']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['UserApi.putConnection']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
          * @summary Delete a user
          * @param {string} userId 
+         * @param {string} xProximaNexusRequesterUserId ID of the user deleting the user
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async remove(userId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.remove(userId, options);
+        async remove(userId: string, xProximaNexusRequesterUserId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.remove(userId, xProximaNexusRequesterUserId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['UserApi.remove']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * 
-         * @summary Remove a friend from a user
-         * @param {string} userId 
-         * @param {string} friendUserId 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async removeFriend(userId: string, friendUserId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.removeFriend(userId, friendUserId, options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['UserApi.removeFriend']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
-        /**
-         * 
+         * Search for users. When requesterUserId is provided, HIDDEN users are filtered out unless the requester is connected to them, and users who have blocked the requester are also filtered out. When requesterUserId is not provided, all users are returned without visibility filtering.
          * @summary Search users
          * @param {string} [displayName] Display name search (ILIKE)
          * @param {number} [latitude] Latitude for radius search
@@ -645,11 +729,12 @@ export const UserApiFp = function(configuration?: Configuration) {
          * @param {number} [minLongitude] Minimum longitude for bounding box
          * @param {number} [maxLongitude] Maximum longitude for bounding box
          * @param {number} [limit] Limit results (1-1000)
+         * @param {string} [xProximaNexusRequesterUserId] ID of the user searching for users. If set, users will be filtered to only include users that the user can see, and requesterConnection will be set on the results.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async search(displayName?: string, latitude?: number, longitude?: number, radius?: number, minLatitude?: number, maxLatitude?: number, minLongitude?: number, maxLongitude?: number, limit?: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<UserDto>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.search(displayName, latitude, longitude, radius, minLatitude, maxLatitude, minLongitude, maxLongitude, limit, options);
+        async search(displayName?: string, latitude?: number, longitude?: number, radius?: number, minLatitude?: number, maxLatitude?: number, minLongitude?: number, maxLongitude?: number, limit?: number, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<UserDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.search(displayName, latitude, longitude, radius, minLatitude, maxLatitude, minLongitude, maxLongitude, limit, xProximaNexusRequesterUserId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['UserApi.search']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -658,12 +743,13 @@ export const UserApiFp = function(configuration?: Configuration) {
          * 
          * @summary Update a user
          * @param {string} userId 
+         * @param {string} xProximaNexusRequesterUserId ID of the user updating the user
          * @param {UpdateUserDto} updateUserDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async update(userId: string, updateUserDto: UpdateUserDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<MutateUserResponseDto>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.update(userId, updateUserDto, options);
+        async update(userId: string, xProximaNexusRequesterUserId: string, updateUserDto: UpdateUserDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<MutateUserResponseDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.update(userId, xProximaNexusRequesterUserId, updateUserDto, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['UserApi.update']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -679,17 +765,6 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
     return {
         /**
          * 
-         * @summary Add a friend to a user
-         * @param {string} userId 
-         * @param {string} friendUserId 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        addFriend(userId: string, friendUserId: string, options?: RawAxiosRequestConfig): AxiosPromise<EntityConnectionDto> {
-            return localVarFp.addFriend(userId, friendUserId, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
          * @summary Create a user
          * @param {CreateUserDto} createUserDto 
          * @param {*} [options] Override http request option.
@@ -699,78 +774,101 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
             return localVarFp.create(createUserDto, options).then((request) => request(axios, basePath));
         },
         /**
-         * 
-         * @summary Get a user by ID
+         * Remove a friend connection or unblock a user. For BLOCKED connections, only the user who initiated the block can unblock.
+         * @summary Delete a connection with another user
          * @param {string} userId 
+         * @param {string} targetUserId 
+         * @param {UserControllerDeleteConnectionTypeEnum} type Type of connection to delete
+         * @param {string} xProximaNexusRequesterUserId ID of the user deleting the connection
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        findOne(userId: string, options?: RawAxiosRequestConfig): AxiosPromise<UserDto> {
-            return localVarFp.findOne(userId, options).then((request) => request(axios, basePath));
+        deleteConnection(userId: string, targetUserId: string, type: UserControllerDeleteConnectionTypeEnum, xProximaNexusRequesterUserId: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.deleteConnection(userId, targetUserId, type, xProximaNexusRequesterUserId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Get a user by ID
+         * @param {string} userId 
+         * @param {string} [xProximaNexusRequesterUserId] ID of the user getting a user by ID. If set, 401 may be returned if the user cannot view the user, otherwise requesterConnection will be set on the result.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        get(userId: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): AxiosPromise<UserDto> {
+            return localVarFp.get(userId, xProximaNexusRequesterUserId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
          * @summary Get a batch of users by IDs
          * @param {GetUsersDto} getUsersDto 
+         * @param {string} [xProximaNexusRequesterUserId] ID of the user getting a batch of users. If set, users will be filtered to only include users that the user can see, and requesterConnection will be set on the results.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getBatch(getUsersDto: GetUsersDto, options?: RawAxiosRequestConfig): AxiosPromise<Array<UserDto>> {
-            return localVarFp.getBatch(getUsersDto, options).then((request) => request(axios, basePath));
+        getBatch(getUsersDto: GetUsersDto, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<UserDto>> {
+            return localVarFp.getBatch(getUsersDto, xProximaNexusRequesterUserId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Get user connections with optional type and state filters. Visibility rules apply: HIDDEN/CONNECTIONS users only show connections to self or connected users. Only the user themselves can see BLOCKED connections or non-ACTIVE states.
+         * @summary Get connections of a user
+         * @param {string} userId 
+         * @param {Array<UserControllerGetConnectionsStateEnum>} [state] Filter connections by state. Can be multiple values. Non-self requesters can only see ACTIVE connections.
+         * @param {Array<UserControllerGetConnectionsTypeEnum>} [type] Filter connections by type. Can be multiple values.
+         * @param {string} [xProximaNexusRequesterUserId] ID of the user viewing connections. Required for non-PUBLIC users. Only the user themselves can view BLOCKED or non-ACTIVE connections.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getConnections(userId: string, state?: Array<UserControllerGetConnectionsStateEnum>, type?: Array<UserControllerGetConnectionsTypeEnum>, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<UserEntityConnectionDto>> {
+            return localVarFp.getConnections(userId, state, type, xProximaNexusRequesterUserId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
          * @summary Get events of a user
          * @param {string} userId 
+         * @param {string} [xProximaNexusRequesterUserId] ID of the user getting events of a user. If set, events will be filtered to only include events that the user can see, and requesterConnection will be set on the results.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getEvents(userId: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<EventEntityConnectionDto>> {
-            return localVarFp.getEvents(userId, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary Get friends of a user
-         * @param {string} userId 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getFriends(userId: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<UserEntityConnectionDto>> {
-            return localVarFp.getFriends(userId, options).then((request) => request(axios, basePath));
+        getEvents(userId: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<EventEntityConnectionDto>> {
+            return localVarFp.getEvents(userId, xProximaNexusRequesterUserId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
          * @summary Get groups of a user
          * @param {string} userId 
+         * @param {string} [xProximaNexusRequesterUserId] ID of the user getting groups of a user. If set, groups will be filtered to only include groups that the user can see, and requesterConnection will be set on the results.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getGroups(userId: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<GroupEntityConnectionDto>> {
-            return localVarFp.getGroups(userId, options).then((request) => request(axios, basePath));
+        getGroups(userId: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<GroupEntityConnectionDto>> {
+            return localVarFp.getGroups(userId, xProximaNexusRequesterUserId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Create a friend request, accept a pending request, or block a user. For FRIEND type: creates REQUESTED state if no connection exists; target user can accept by setting state to ACTIVE. For BLOCKED type: creates a mutual block.
+         * @summary Create or update a connection with another user
+         * @param {string} userId 
+         * @param {string} targetUserId 
+         * @param {string} xProximaNexusRequesterUserId ID of the user creating/modifying the connection (must match userId)
+         * @param {MutateUserConnectionDto} mutateUserConnectionDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        putConnection(userId: string, targetUserId: string, xProximaNexusRequesterUserId: string, mutateUserConnectionDto: MutateUserConnectionDto, options?: RawAxiosRequestConfig): AxiosPromise<EntityConnectionDto> {
+            return localVarFp.putConnection(userId, targetUserId, xProximaNexusRequesterUserId, mutateUserConnectionDto, options).then((request) => request(axios, basePath));
         },
         /**
          * 
          * @summary Delete a user
          * @param {string} userId 
+         * @param {string} xProximaNexusRequesterUserId ID of the user deleting the user
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        remove(userId: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
-            return localVarFp.remove(userId, options).then((request) => request(axios, basePath));
+        remove(userId: string, xProximaNexusRequesterUserId: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.remove(userId, xProximaNexusRequesterUserId, options).then((request) => request(axios, basePath));
         },
         /**
-         * 
-         * @summary Remove a friend from a user
-         * @param {string} userId 
-         * @param {string} friendUserId 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        removeFriend(userId: string, friendUserId: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
-            return localVarFp.removeFriend(userId, friendUserId, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
+         * Search for users. When requesterUserId is provided, HIDDEN users are filtered out unless the requester is connected to them, and users who have blocked the requester are also filtered out. When requesterUserId is not provided, all users are returned without visibility filtering.
          * @summary Search users
          * @param {string} [displayName] Display name search (ILIKE)
          * @param {number} [latitude] Latitude for radius search
@@ -781,22 +879,24 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
          * @param {number} [minLongitude] Minimum longitude for bounding box
          * @param {number} [maxLongitude] Maximum longitude for bounding box
          * @param {number} [limit] Limit results (1-1000)
+         * @param {string} [xProximaNexusRequesterUserId] ID of the user searching for users. If set, users will be filtered to only include users that the user can see, and requesterConnection will be set on the results.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        search(displayName?: string, latitude?: number, longitude?: number, radius?: number, minLatitude?: number, maxLatitude?: number, minLongitude?: number, maxLongitude?: number, limit?: number, options?: RawAxiosRequestConfig): AxiosPromise<Array<UserDto>> {
-            return localVarFp.search(displayName, latitude, longitude, radius, minLatitude, maxLatitude, minLongitude, maxLongitude, limit, options).then((request) => request(axios, basePath));
+        search(displayName?: string, latitude?: number, longitude?: number, radius?: number, minLatitude?: number, maxLatitude?: number, minLongitude?: number, maxLongitude?: number, limit?: number, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<UserDto>> {
+            return localVarFp.search(displayName, latitude, longitude, radius, minLatitude, maxLatitude, minLongitude, maxLongitude, limit, xProximaNexusRequesterUserId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
          * @summary Update a user
          * @param {string} userId 
+         * @param {string} xProximaNexusRequesterUserId ID of the user updating the user
          * @param {UpdateUserDto} updateUserDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        update(userId: string, updateUserDto: UpdateUserDto, options?: RawAxiosRequestConfig): AxiosPromise<MutateUserResponseDto> {
-            return localVarFp.update(userId, updateUserDto, options).then((request) => request(axios, basePath));
+        update(userId: string, xProximaNexusRequesterUserId: string, updateUserDto: UpdateUserDto, options?: RawAxiosRequestConfig): AxiosPromise<MutateUserResponseDto> {
+            return localVarFp.update(userId, xProximaNexusRequesterUserId, updateUserDto, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -807,16 +907,6 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
 export interface UserApiInterface {
     /**
      * 
-     * @summary Add a friend to a user
-     * @param {string} userId 
-     * @param {string} friendUserId 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    addFriend(userId: string, friendUserId: string, options?: RawAxiosRequestConfig): AxiosPromise<EntityConnectionDto>;
-
-    /**
-     * 
      * @summary Create a user
      * @param {CreateUserDto} createUserDto 
      * @param {*} [options] Override http request option.
@@ -825,71 +915,93 @@ export interface UserApiInterface {
     create(createUserDto: CreateUserDto, options?: RawAxiosRequestConfig): AxiosPromise<MutateUserResponseDto>;
 
     /**
-     * 
-     * @summary Get a user by ID
+     * Remove a friend connection or unblock a user. For BLOCKED connections, only the user who initiated the block can unblock.
+     * @summary Delete a connection with another user
      * @param {string} userId 
+     * @param {string} targetUserId 
+     * @param {UserControllerDeleteConnectionTypeEnum} type Type of connection to delete
+     * @param {string} xProximaNexusRequesterUserId ID of the user deleting the connection
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    findOne(userId: string, options?: RawAxiosRequestConfig): AxiosPromise<UserDto>;
+    deleteConnection(userId: string, targetUserId: string, type: UserControllerDeleteConnectionTypeEnum, xProximaNexusRequesterUserId: string, options?: RawAxiosRequestConfig): AxiosPromise<void>;
+
+    /**
+     * 
+     * @summary Get a user by ID
+     * @param {string} userId 
+     * @param {string} [xProximaNexusRequesterUserId] ID of the user getting a user by ID. If set, 401 may be returned if the user cannot view the user, otherwise requesterConnection will be set on the result.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    get(userId: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): AxiosPromise<UserDto>;
 
     /**
      * 
      * @summary Get a batch of users by IDs
      * @param {GetUsersDto} getUsersDto 
+     * @param {string} [xProximaNexusRequesterUserId] ID of the user getting a batch of users. If set, users will be filtered to only include users that the user can see, and requesterConnection will be set on the results.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getBatch(getUsersDto: GetUsersDto, options?: RawAxiosRequestConfig): AxiosPromise<Array<UserDto>>;
+    getBatch(getUsersDto: GetUsersDto, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<UserDto>>;
+
+    /**
+     * Get user connections with optional type and state filters. Visibility rules apply: HIDDEN/CONNECTIONS users only show connections to self or connected users. Only the user themselves can see BLOCKED connections or non-ACTIVE states.
+     * @summary Get connections of a user
+     * @param {string} userId 
+     * @param {Array<UserControllerGetConnectionsStateEnum>} [state] Filter connections by state. Can be multiple values. Non-self requesters can only see ACTIVE connections.
+     * @param {Array<UserControllerGetConnectionsTypeEnum>} [type] Filter connections by type. Can be multiple values.
+     * @param {string} [xProximaNexusRequesterUserId] ID of the user viewing connections. Required for non-PUBLIC users. Only the user themselves can view BLOCKED or non-ACTIVE connections.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getConnections(userId: string, state?: Array<UserControllerGetConnectionsStateEnum>, type?: Array<UserControllerGetConnectionsTypeEnum>, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<UserEntityConnectionDto>>;
 
     /**
      * 
      * @summary Get events of a user
      * @param {string} userId 
+     * @param {string} [xProximaNexusRequesterUserId] ID of the user getting events of a user. If set, events will be filtered to only include events that the user can see, and requesterConnection will be set on the results.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getEvents(userId: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<EventEntityConnectionDto>>;
-
-    /**
-     * 
-     * @summary Get friends of a user
-     * @param {string} userId 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    getFriends(userId: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<UserEntityConnectionDto>>;
+    getEvents(userId: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<EventEntityConnectionDto>>;
 
     /**
      * 
      * @summary Get groups of a user
      * @param {string} userId 
+     * @param {string} [xProximaNexusRequesterUserId] ID of the user getting groups of a user. If set, groups will be filtered to only include groups that the user can see, and requesterConnection will be set on the results.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getGroups(userId: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<GroupEntityConnectionDto>>;
+    getGroups(userId: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<GroupEntityConnectionDto>>;
+
+    /**
+     * Create a friend request, accept a pending request, or block a user. For FRIEND type: creates REQUESTED state if no connection exists; target user can accept by setting state to ACTIVE. For BLOCKED type: creates a mutual block.
+     * @summary Create or update a connection with another user
+     * @param {string} userId 
+     * @param {string} targetUserId 
+     * @param {string} xProximaNexusRequesterUserId ID of the user creating/modifying the connection (must match userId)
+     * @param {MutateUserConnectionDto} mutateUserConnectionDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    putConnection(userId: string, targetUserId: string, xProximaNexusRequesterUserId: string, mutateUserConnectionDto: MutateUserConnectionDto, options?: RawAxiosRequestConfig): AxiosPromise<EntityConnectionDto>;
 
     /**
      * 
      * @summary Delete a user
      * @param {string} userId 
+     * @param {string} xProximaNexusRequesterUserId ID of the user deleting the user
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    remove(userId: string, options?: RawAxiosRequestConfig): AxiosPromise<void>;
+    remove(userId: string, xProximaNexusRequesterUserId: string, options?: RawAxiosRequestConfig): AxiosPromise<void>;
 
     /**
-     * 
-     * @summary Remove a friend from a user
-     * @param {string} userId 
-     * @param {string} friendUserId 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    removeFriend(userId: string, friendUserId: string, options?: RawAxiosRequestConfig): AxiosPromise<void>;
-
-    /**
-     * 
+     * Search for users. When requesterUserId is provided, HIDDEN users are filtered out unless the requester is connected to them, and users who have blocked the requester are also filtered out. When requesterUserId is not provided, all users are returned without visibility filtering.
      * @summary Search users
      * @param {string} [displayName] Display name search (ILIKE)
      * @param {number} [latitude] Latitude for radius search
@@ -900,20 +1012,22 @@ export interface UserApiInterface {
      * @param {number} [minLongitude] Minimum longitude for bounding box
      * @param {number} [maxLongitude] Maximum longitude for bounding box
      * @param {number} [limit] Limit results (1-1000)
+     * @param {string} [xProximaNexusRequesterUserId] ID of the user searching for users. If set, users will be filtered to only include users that the user can see, and requesterConnection will be set on the results.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    search(displayName?: string, latitude?: number, longitude?: number, radius?: number, minLatitude?: number, maxLatitude?: number, minLongitude?: number, maxLongitude?: number, limit?: number, options?: RawAxiosRequestConfig): AxiosPromise<Array<UserDto>>;
+    search(displayName?: string, latitude?: number, longitude?: number, radius?: number, minLatitude?: number, maxLatitude?: number, minLongitude?: number, maxLongitude?: number, limit?: number, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<UserDto>>;
 
     /**
      * 
      * @summary Update a user
      * @param {string} userId 
+     * @param {string} xProximaNexusRequesterUserId ID of the user updating the user
      * @param {UpdateUserDto} updateUserDto 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    update(userId: string, updateUserDto: UpdateUserDto, options?: RawAxiosRequestConfig): AxiosPromise<MutateUserResponseDto>;
+    update(userId: string, xProximaNexusRequesterUserId: string, updateUserDto: UpdateUserDto, options?: RawAxiosRequestConfig): AxiosPromise<MutateUserResponseDto>;
 
 }
 
@@ -921,18 +1035,6 @@ export interface UserApiInterface {
  * UserApi - object-oriented interface
  */
 export class UserApi extends BaseAPI implements UserApiInterface {
-    /**
-     * 
-     * @summary Add a friend to a user
-     * @param {string} userId 
-     * @param {string} friendUserId 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    public addFriend(userId: string, friendUserId: string, options?: RawAxiosRequestConfig) {
-        return UserApiFp(this.configuration).addFriend(userId, friendUserId, options).then((request) => request(this.axios, this.basePath));
-    }
-
     /**
      * 
      * @summary Create a user
@@ -945,85 +1047,109 @@ export class UserApi extends BaseAPI implements UserApiInterface {
     }
 
     /**
-     * 
-     * @summary Get a user by ID
+     * Remove a friend connection or unblock a user. For BLOCKED connections, only the user who initiated the block can unblock.
+     * @summary Delete a connection with another user
      * @param {string} userId 
+     * @param {string} targetUserId 
+     * @param {UserControllerDeleteConnectionTypeEnum} type Type of connection to delete
+     * @param {string} xProximaNexusRequesterUserId ID of the user deleting the connection
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public findOne(userId: string, options?: RawAxiosRequestConfig) {
-        return UserApiFp(this.configuration).findOne(userId, options).then((request) => request(this.axios, this.basePath));
+    public deleteConnection(userId: string, targetUserId: string, type: UserControllerDeleteConnectionTypeEnum, xProximaNexusRequesterUserId: string, options?: RawAxiosRequestConfig) {
+        return UserApiFp(this.configuration).deleteConnection(userId, targetUserId, type, xProximaNexusRequesterUserId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Get a user by ID
+     * @param {string} userId 
+     * @param {string} [xProximaNexusRequesterUserId] ID of the user getting a user by ID. If set, 401 may be returned if the user cannot view the user, otherwise requesterConnection will be set on the result.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public get(userId: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig) {
+        return UserApiFp(this.configuration).get(userId, xProximaNexusRequesterUserId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
      * @summary Get a batch of users by IDs
      * @param {GetUsersDto} getUsersDto 
+     * @param {string} [xProximaNexusRequesterUserId] ID of the user getting a batch of users. If set, users will be filtered to only include users that the user can see, and requesterConnection will be set on the results.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public getBatch(getUsersDto: GetUsersDto, options?: RawAxiosRequestConfig) {
-        return UserApiFp(this.configuration).getBatch(getUsersDto, options).then((request) => request(this.axios, this.basePath));
+    public getBatch(getUsersDto: GetUsersDto, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig) {
+        return UserApiFp(this.configuration).getBatch(getUsersDto, xProximaNexusRequesterUserId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Get user connections with optional type and state filters. Visibility rules apply: HIDDEN/CONNECTIONS users only show connections to self or connected users. Only the user themselves can see BLOCKED connections or non-ACTIVE states.
+     * @summary Get connections of a user
+     * @param {string} userId 
+     * @param {Array<UserControllerGetConnectionsStateEnum>} [state] Filter connections by state. Can be multiple values. Non-self requesters can only see ACTIVE connections.
+     * @param {Array<UserControllerGetConnectionsTypeEnum>} [type] Filter connections by type. Can be multiple values.
+     * @param {string} [xProximaNexusRequesterUserId] ID of the user viewing connections. Required for non-PUBLIC users. Only the user themselves can view BLOCKED or non-ACTIVE connections.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public getConnections(userId: string, state?: Array<UserControllerGetConnectionsStateEnum>, type?: Array<UserControllerGetConnectionsTypeEnum>, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig) {
+        return UserApiFp(this.configuration).getConnections(userId, state, type, xProximaNexusRequesterUserId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
      * @summary Get events of a user
      * @param {string} userId 
+     * @param {string} [xProximaNexusRequesterUserId] ID of the user getting events of a user. If set, events will be filtered to only include events that the user can see, and requesterConnection will be set on the results.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public getEvents(userId: string, options?: RawAxiosRequestConfig) {
-        return UserApiFp(this.configuration).getEvents(userId, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary Get friends of a user
-     * @param {string} userId 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    public getFriends(userId: string, options?: RawAxiosRequestConfig) {
-        return UserApiFp(this.configuration).getFriends(userId, options).then((request) => request(this.axios, this.basePath));
+    public getEvents(userId: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig) {
+        return UserApiFp(this.configuration).getEvents(userId, xProximaNexusRequesterUserId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
      * @summary Get groups of a user
      * @param {string} userId 
+     * @param {string} [xProximaNexusRequesterUserId] ID of the user getting groups of a user. If set, groups will be filtered to only include groups that the user can see, and requesterConnection will be set on the results.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public getGroups(userId: string, options?: RawAxiosRequestConfig) {
-        return UserApiFp(this.configuration).getGroups(userId, options).then((request) => request(this.axios, this.basePath));
+    public getGroups(userId: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig) {
+        return UserApiFp(this.configuration).getGroups(userId, xProximaNexusRequesterUserId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Create a friend request, accept a pending request, or block a user. For FRIEND type: creates REQUESTED state if no connection exists; target user can accept by setting state to ACTIVE. For BLOCKED type: creates a mutual block.
+     * @summary Create or update a connection with another user
+     * @param {string} userId 
+     * @param {string} targetUserId 
+     * @param {string} xProximaNexusRequesterUserId ID of the user creating/modifying the connection (must match userId)
+     * @param {MutateUserConnectionDto} mutateUserConnectionDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public putConnection(userId: string, targetUserId: string, xProximaNexusRequesterUserId: string, mutateUserConnectionDto: MutateUserConnectionDto, options?: RawAxiosRequestConfig) {
+        return UserApiFp(this.configuration).putConnection(userId, targetUserId, xProximaNexusRequesterUserId, mutateUserConnectionDto, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
      * @summary Delete a user
      * @param {string} userId 
+     * @param {string} xProximaNexusRequesterUserId ID of the user deleting the user
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public remove(userId: string, options?: RawAxiosRequestConfig) {
-        return UserApiFp(this.configuration).remove(userId, options).then((request) => request(this.axios, this.basePath));
+    public remove(userId: string, xProximaNexusRequesterUserId: string, options?: RawAxiosRequestConfig) {
+        return UserApiFp(this.configuration).remove(userId, xProximaNexusRequesterUserId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
-     * 
-     * @summary Remove a friend from a user
-     * @param {string} userId 
-     * @param {string} friendUserId 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    public removeFriend(userId: string, friendUserId: string, options?: RawAxiosRequestConfig) {
-        return UserApiFp(this.configuration).removeFriend(userId, friendUserId, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
+     * Search for users. When requesterUserId is provided, HIDDEN users are filtered out unless the requester is connected to them, and users who have blocked the requester are also filtered out. When requesterUserId is not provided, all users are returned without visibility filtering.
      * @summary Search users
      * @param {string} [displayName] Display name search (ILIKE)
      * @param {number} [latitude] Latitude for radius search
@@ -1034,23 +1160,39 @@ export class UserApi extends BaseAPI implements UserApiInterface {
      * @param {number} [minLongitude] Minimum longitude for bounding box
      * @param {number} [maxLongitude] Maximum longitude for bounding box
      * @param {number} [limit] Limit results (1-1000)
+     * @param {string} [xProximaNexusRequesterUserId] ID of the user searching for users. If set, users will be filtered to only include users that the user can see, and requesterConnection will be set on the results.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public search(displayName?: string, latitude?: number, longitude?: number, radius?: number, minLatitude?: number, maxLatitude?: number, minLongitude?: number, maxLongitude?: number, limit?: number, options?: RawAxiosRequestConfig) {
-        return UserApiFp(this.configuration).search(displayName, latitude, longitude, radius, minLatitude, maxLatitude, minLongitude, maxLongitude, limit, options).then((request) => request(this.axios, this.basePath));
+    public search(displayName?: string, latitude?: number, longitude?: number, radius?: number, minLatitude?: number, maxLatitude?: number, minLongitude?: number, maxLongitude?: number, limit?: number, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig) {
+        return UserApiFp(this.configuration).search(displayName, latitude, longitude, radius, minLatitude, maxLatitude, minLongitude, maxLongitude, limit, xProximaNexusRequesterUserId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
      * @summary Update a user
      * @param {string} userId 
+     * @param {string} xProximaNexusRequesterUserId ID of the user updating the user
      * @param {UpdateUserDto} updateUserDto 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public update(userId: string, updateUserDto: UpdateUserDto, options?: RawAxiosRequestConfig) {
-        return UserApiFp(this.configuration).update(userId, updateUserDto, options).then((request) => request(this.axios, this.basePath));
+    public update(userId: string, xProximaNexusRequesterUserId: string, updateUserDto: UpdateUserDto, options?: RawAxiosRequestConfig) {
+        return UserApiFp(this.configuration).update(userId, xProximaNexusRequesterUserId, updateUserDto, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
+export enum UserControllerDeleteConnectionTypeEnum {
+    friend = 'friend',
+    blocked = 'blocked'
+}
+export enum UserControllerGetConnectionsStateEnum {
+    requested = 'requested',
+    active = 'active',
+    rejected = 'rejected',
+    blocked = 'blocked'
+}
+export enum UserControllerGetConnectionsTypeEnum {
+    friend = 'friend',
+    blocked = 'blocked'
+}
