@@ -5,6 +5,25 @@ All notable changes to the Proxima Nexus TypeScript SDK are documented in this f
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2025-01-30
+
+### Added
+
+- **Enhanced Client** (`EnhancedProximaNexusClient`) – Higher-level API that wraps the base client with:
+  - **Simplified method signatures** – No `RawAxiosRequestConfig`; `requesterUserId` instead of `xProximaNexusRequesterUserId`
+  - **Unwrapped return values** – Methods return `Promise<T>` (e.g. `UserDto`) instead of Axios response; no `.data` needed
+  - **Domain-focused methods** – e.g. `getUser`, `getFriends`, `sendFriendRequest`, `acceptFriendRequest`, `searchByDisplayName`, `searchByRadius`, `searchByBoundingBox`
+  - **Friend workflow** – `sendFriendRequest`, `acceptFriendRequest`, `declineFriendRequest`, `removeFriend`, `getFriends`, `getPendingFriendRequests`
+  - **Blocking** – `blockUser`, `unblockUser`, `getBlockedUsers`
+  - **Event attendee/role** – `addAttendee`, `removeAttendee`, `getAttendees`, `promoteToAdmin`, `demoteToAttendee`, `getAdmins`, `getOwner`
+  - **Group membership** – `joinGroup`, `leaveGroup`, `approveMember`, `rejectMember`, `removeMember`, `getMembers`, `getPendingMembers`, `promoteToAdmin`, `demoteToMember`, `getAdmins`, `getOwner`
+- **Custom errors** – `NotFoundError`, `UnauthorizedError`, `ValidationError` (thrown instead of raw Axios errors when using the enhanced client)
+- **Base client access** – `client.base` on `EnhancedProximaNexusClient` for direct access to `UserApi`, `EventApi`, `GroupApi` when needed
+
+### Changed
+
+- None; base client API is unchanged. Enhanced client is additive.
+
 ## [2.0.1] - 2025-01-29
 
 ### Changed

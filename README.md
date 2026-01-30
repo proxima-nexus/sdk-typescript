@@ -2,7 +2,7 @@
 
 TypeScript SDK for the Proxima Nexus Data Plane API.
 
-> **Note:** This SDK version 2.0.0 includes breaking changes. See the [CHANGELOG.md](./CHANGELOG.md) for migration details.
+> **Note:** Version 2.0.0 introduced breaking changes. See [CHANGELOG.md](./CHANGELOG.md) for migration details. Version 2.1.0 adds an **Enhanced Client** with a simplified, domain-driven API.
 
 ## Installation
 
@@ -10,21 +10,51 @@ TypeScript SDK for the Proxima Nexus Data Plane API.
 npm install @proxima-nexus/sdk-typescript
 ```
 
+## Client Options
+
+The SDK provides two client options:
+
+- **ProximaNexusClient** (base) – Direct mapping to the Data Plane API. Returns Axios promises; you use `.data` on responses.
+- **EnhancedProximaNexusClient** – Higher-level API with simpler method names, unwrapped return values (no `.data`), and domain helpers (e.g. `getFriends`, `searchByDisplayName`). Use `client.base` when you need the raw APIs.
+
 ## Usage
 
-### Basic Setup
+### Basic Setup (Base Client)
 
 ```typescript
 import { ProximaNexusClient } from '@proxima-nexus/sdk-typescript';
 
-// Initialize client
 const client = new ProximaNexusClient({
   apiKey: process.env.PROXIMA_NEXUS_API_KEY!,
   baseURL: 'https://api.proxima-nexus.com',
 });
 ```
 
-### User Operations
+### Enhanced Client (Recommended for New Code)
+
+```typescript
+import { EnhancedProximaNexusClient } from '@proxima-nexus/sdk-typescript';
+
+const client = new EnhancedProximaNexusClient({
+  apiKey: process.env.PROXIMA_NEXUS_API_KEY!,
+  baseURL: 'https://api.proxima-nexus.com',
+});
+
+// Methods return unwrapped data (no .data)
+const user = await client.users.getUser('user-123', 'requester-123'); // UserDto
+const friends = await client.users.getFriends('user-123');           // UserEntityConnectionDto[]
+const users = await client.users.searchByDisplayName('John', undefined, 10);
+
+// Friend workflow
+await client.users.sendFriendRequest('alice-id', 'bob-id');
+await client.users.acceptFriendRequest('bob-id', 'alice-id');
+await client.users.removeFriend('alice-id', 'bob-id');
+
+// Access raw APIs when needed
+const rawResponse = await client.base.users.get('user-123');
+```
+
+### User Operations (Base Client)
 
 ```typescript
 async function main() {
@@ -124,7 +154,7 @@ async function main() {
 }
 ```
 
-### Event Operations
+### Event Operations (Base Client)
 
 ```typescript
 async function main() {
@@ -219,7 +249,7 @@ async function main() {
 }
 ```
 
-### Group Operations
+### Group Operations (Base Client)
 
 ```typescript
 async function main() {
@@ -310,9 +340,21 @@ async function main() {
 }
 ```
 
+## Enhanced Client API Overview
+
+The enhanced client exposes domain-focused methods:
+
+**Users:** `getUser`, `getUsers`, `createUser`, `updateUser`, `deleteUser`, `searchByDisplayName`, `searchByRadius`, `searchByBoundingBox`, `sendFriendRequest`, `acceptFriendRequest`, `declineFriendRequest`, `removeFriend`, `getFriends`, `getPendingFriendRequests`, `blockUser`, `unblockUser`, `getBlockedUsers`, `getEvents`, `getGroups`
+
+**Events:** `getEvent`, `getEvents`, `createEvent`, `updateEvent`, `deleteEvent`, `searchByDisplayName`, `searchByRadius`, `searchByBoundingBox`, `addAttendee`, `removeAttendee`, `getAttendees`, `promoteToAdmin`, `demoteToAttendee`, `getAdmins`, `getOwner`
+
+**Groups:** `getGroup`, `getGroups`, `createGroup`, `updateGroup`, `deleteGroup`, `searchByDisplayName`, `searchByRadius`, `searchByBoundingBox`, `joinGroup`, `leaveGroup`, `approveMember`, `rejectMember`, `removeMember`, `getMembers`, `getPendingMembers`, `promoteToAdmin`, `demoteToMember`, `getAdmins`, `getOwner`, `getEvents`
+
+Errors from the enhanced client are thrown as `NotFoundError`, `UnauthorizedError`, or `ValidationError` (see `src/enhanced/errors.ts`).
+
 ## Requester User ID
 
-In version 2.0.0, the requester user ID is passed as a method parameter (`xProximaNexusRequesterUserId`) rather than in request bodies. This parameter is optional for most operations but required for operations that modify entities (create, update, delete) or when accessing non-public entities.
+In version 2.0.0, the requester user ID is passed as a method parameter (`xProximaNexusRequesterUserId` / `requesterUserId`) rather than in request bodies. This parameter is optional for most operations but required for operations that modify entities (create, update, delete) or when accessing non-public entities.
 
 ## Configuration
 

@@ -19,19 +19,19 @@ export interface ProximaNexusClientConfig {
    * @default "https://api.proxima-nexus.com"
    */
   baseURL?: string;
-  
+
   /**
    * API key for authentication
    * Required for all requests
    */
   apiKey: string;
-  
+
   /**
    * Request timeout in milliseconds
    * @default 30000
    */
   timeout?: number;
-  
+
   /**
    * Additional axios configuration
    */
@@ -42,7 +42,7 @@ export class ProximaNexusClient {
   public readonly users: UserApi;
   public readonly events: EventApi;
   public readonly groups: GroupApi;
-  
+
   constructor(config: ProximaNexusClientConfig) {
     const configuration = new Configuration({
       apiKey: config.apiKey,
@@ -52,7 +52,7 @@ export class ProximaNexusClient {
         ...config.axiosConfig,
       },
     });
-    
+
     this.users = new UserApi(configuration);
     this.events = new EventApi(configuration);
     this.groups = new GroupApi(configuration);
@@ -60,3 +60,19 @@ export class ProximaNexusClient {
 }
 
 export default ProximaNexusClient;
+
+// Enhanced client (separate export path to avoid circular dependency in enhanced module)
+export {
+  EnhancedProximaNexusClient,
+  EnhancedUserApi,
+  EnhancedEventApi,
+  EnhancedGroupApi,
+  NotFoundError,
+  UnauthorizedError,
+  ValidationError,
+  EnhancedClientError,
+  transformAxiosError,
+  unwrap,
+  type EnhancedClientConfig,
+} from './enhanced';
+export type { EnhancedClientError as EnhancedClientErrorType } from './enhanced';
