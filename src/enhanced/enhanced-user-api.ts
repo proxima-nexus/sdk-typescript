@@ -187,7 +187,10 @@ export class EnhancedUserApi {
     return unwrap(
       this.api.getConnections(
         userId,
-        [UserControllerGetConnectionsStateEnum.requested],
+        [
+          UserControllerGetConnectionsStateEnum.outgoing_request,
+          UserControllerGetConnectionsStateEnum.incoming_request,
+        ],
         [UserControllerGetConnectionsTypeEnum.friend],
         userId
       )
@@ -226,7 +229,7 @@ export class EnhancedUserApi {
     return unwrap(
       this.api.getConnections(
         userId,
-        [UserControllerGetConnectionsStateEnum.blocked],
+        [UserControllerGetConnectionsStateEnum.active],
         [UserControllerGetConnectionsTypeEnum.blocked],
         userId
       )

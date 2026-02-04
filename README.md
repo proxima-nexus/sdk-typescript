@@ -2,8 +2,6 @@
 
 TypeScript SDK for the Proxima Nexus Data Plane API.
 
-> **Note:** Version 2.0.0 introduced breaking changes. See [CHANGELOG.md](./CHANGELOG.md) for migration details. Version 2.1.0 adds an **Enhanced Client** with a simplified, domain-driven API.
-
 ## Installation
 
 ```bash

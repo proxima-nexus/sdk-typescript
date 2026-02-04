@@ -1101,8 +1101,7 @@ export class GroupApi extends BaseAPI implements GroupApiInterface {
 export enum GroupControllerGetConnectionsStateEnum {
     requested = 'requested',
     active = 'active',
-    rejected = 'rejected',
-    blocked = 'blocked'
+    invited = 'invited'
 }
 export enum GroupControllerGetConnectionsTypeEnum {
     member = 'member',

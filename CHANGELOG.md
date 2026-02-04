@@ -5,6 +5,18 @@ All notable changes to the Proxima Nexus TypeScript SDK are documented in this f
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.1] - 2026-02-04
+
+### Changed
+
+- Updated `@proxima-nexus/openapi` to `^2.0.1` and regenerated connection DTOs to match the latest API schema for connection states (including `incoming_request`, `outgoing_request`, and `invited`).
+- Made `state` optional on connection DTOs and cleaned up enum values to better reflect the underlying API.
+- Updated `UserApi` and `GroupApi` connection state enums to use the new state names.
+- Adjusted enhanced client helpers so that:
+  - `getPendingFriendRequests` returns both incoming and outgoing friend requests using the new state values.
+  - `getBlockedUsers` filters on connection type `blocked` while keeping state `active`.
+  - `getMembers` for groups returns active members, admins, and the owner.
+
 ## [2.1.0] - 2025-01-30
 
 ### Added

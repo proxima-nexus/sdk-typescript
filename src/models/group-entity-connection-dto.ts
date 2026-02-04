@@ -24,35 +24,34 @@ export interface GroupEntityConnectionDto {
      */
     'updatedAt'?: string;
     /**
-     * Connection state
-     */
-    'state': GroupEntityConnectionDtoStateEnum;
-    /**
      * Connection type
      */
     'type': GroupEntityConnectionDtoTypeEnum;
+    /**
+     * Connection state
+     */
+    'state'?: GroupEntityConnectionDtoStateEnum;
     /**
      * Group ID
      */
     'groupId': string;
 }
 
-export enum GroupEntityConnectionDtoStateEnum {
-    requested = 'requested',
-    active = 'active',
-    rejected = 'rejected',
-    blocked = 'blocked'
-}
 export enum GroupEntityConnectionDtoTypeEnum {
     attendee = 'attendee',
     admin = 'admin',
     owner = 'owner',
     member = 'member',
-    admin2 = 'admin',
-    owner2 = 'owner',
     friend = 'friend',
     blocked = 'blocked',
     none = 'none'
+}
+export enum GroupEntityConnectionDtoStateEnum {
+    incoming_request = 'incoming_request',
+    outgoing_request = 'outgoing_request',
+    active = 'active',
+    requested = 'requested',
+    invited = 'invited'
 }
 
 

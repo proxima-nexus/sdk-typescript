@@ -199,7 +199,11 @@ export class EnhancedGroupApi {
       this.api.getConnections(
         groupId,
         [GroupControllerGetConnectionsStateEnum.active],
-        [GroupControllerGetConnectionsTypeEnum.member],
+        [
+          GroupControllerGetConnectionsTypeEnum.member,
+          GroupControllerGetConnectionsTypeEnum.admin,
+          GroupControllerGetConnectionsTypeEnum.owner,
+        ],
         requesterUserId
       )
     );

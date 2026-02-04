@@ -24,31 +24,30 @@ export interface EntityConnectionDto {
      */
     'updatedAt'?: string;
     /**
-     * Connection state
-     */
-    'state': EntityConnectionDtoStateEnum;
-    /**
      * Connection type
      */
     'type': EntityConnectionDtoTypeEnum;
+    /**
+     * Connection state
+     */
+    'state'?: EntityConnectionDtoStateEnum;
 }
 
-export enum EntityConnectionDtoStateEnum {
-    requested = 'requested',
-    active = 'active',
-    rejected = 'rejected',
-    blocked = 'blocked'
-}
 export enum EntityConnectionDtoTypeEnum {
     attendee = 'attendee',
     admin = 'admin',
     owner = 'owner',
     member = 'member',
-    admin2 = 'admin',
-    owner2 = 'owner',
     friend = 'friend',
     blocked = 'blocked',
     none = 'none'
+}
+export enum EntityConnectionDtoStateEnum {
+    incoming_request = 'incoming_request',
+    outgoing_request = 'outgoing_request',
+    active = 'active',
+    requested = 'requested',
+    invited = 'invited'
 }
 
 

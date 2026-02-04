@@ -1187,10 +1187,9 @@ export enum UserControllerDeleteConnectionTypeEnum {
     blocked = 'blocked'
 }
 export enum UserControllerGetConnectionsStateEnum {
-    requested = 'requested',
-    active = 'active',
-    rejected = 'rejected',
-    blocked = 'blocked'
+    incoming_request = 'incoming_request',
+    outgoing_request = 'outgoing_request',
+    active = 'active'
 }
 export enum UserControllerGetConnectionsTypeEnum {
     friend = 'friend',
