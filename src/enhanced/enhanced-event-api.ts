@@ -52,7 +52,9 @@ export class EnhancedEventApi {
   async searchByDisplayName(
     displayName: string,
     requesterUserId?: string,
-    limit?: number
+    limit?: number,
+    from?: string,
+    to?: string
   ): Promise<EventDto[]> {
     return unwrap(
       this.api.search(
@@ -65,6 +67,8 @@ export class EnhancedEventApi {
         undefined,
         undefined,
         limit,
+        from,
+        to,
         requesterUserId
       )
     );
@@ -75,7 +79,9 @@ export class EnhancedEventApi {
     longitude: number,
     radiusMeters: number,
     requesterUserId?: string,
-    limit?: number
+    limit?: number,
+    from?: string,
+    to?: string
   ): Promise<EventDto[]> {
     return unwrap(
       this.api.search(
@@ -88,6 +94,8 @@ export class EnhancedEventApi {
         undefined,
         undefined,
         limit,
+        from,
+        to,
         requesterUserId
       )
     );
@@ -99,7 +107,9 @@ export class EnhancedEventApi {
     minLng: number,
     maxLng: number,
     requesterUserId?: string,
-    limit?: number
+    limit?: number,
+    from?: string,
+    to?: string
   ): Promise<EventDto[]> {
     return unwrap(
       this.api.search(
@@ -112,6 +122,32 @@ export class EnhancedEventApi {
         minLng,
         maxLng,
         limit,
+        from,
+        to,
+        requesterUserId
+      )
+    );
+  }
+
+  async searchByDateRange(
+    from: string,
+    to: string,
+    requesterUserId?: string,
+    limit?: number
+  ): Promise<EventDto[]> {
+    return unwrap(
+      this.api.search(
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        limit,
+        from,
+        to,
         requesterUserId
       )
     );

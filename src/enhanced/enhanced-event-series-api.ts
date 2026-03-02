@@ -33,7 +33,7 @@ export class EnhancedEventSeriesApi {
         return unwrap(this.api.remove(seriesId, requesterUserId));
     }
 
-    async getInstances(seriesId: string): Promise<EventDto[]> {
-        return unwrap(this.api.getInstances(seriesId));
+    async getInstances(seriesId: string, from?: string, to?: string): Promise<EventDto[]> {
+        return unwrap(this.api.getInstances(seriesId, from, to));
     }
 }

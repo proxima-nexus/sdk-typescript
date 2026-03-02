@@ -65,6 +65,8 @@ export class EnhancedUserApi {
         undefined,
         undefined,
         limit,
+        undefined,
+        undefined,
         requesterUserId
       )
     );
@@ -88,6 +90,8 @@ export class EnhancedUserApi {
         undefined,
         undefined,
         limit,
+        undefined,
+        undefined,
         requesterUserId
       )
     );
@@ -112,6 +116,8 @@ export class EnhancedUserApi {
         minLng,
         maxLng,
         limit,
+        undefined,
+        undefined,
         requesterUserId
       )
     );
@@ -238,9 +244,11 @@ export class EnhancedUserApi {
 
   async getEvents(
     userId: string,
+    from?: string,
+    to?: string,
     requesterUserId?: string
   ): Promise<EventEntityConnectionDto[]> {
-    return unwrap(this.api.getEvents(userId, requesterUserId));
+    return unwrap(this.api.getEvents(userId, from, to, requesterUserId));
   }
 
   async getGroups(

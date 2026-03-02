@@ -5,6 +5,18 @@ All notable changes to the Proxima Nexus TypeScript SDK are documented in this f
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.0] - 2026-03-02
+
+### Added
+
+- Time range filters (`from`, `to`) to event, user, group, and series APIs so you can easily query only ongoing or upcoming events.
+- Enhanced client helpers for events now support passing `from`/`to` and include a new `searchByDateRange` method for date-only queries.
+- Enhanced user and group helpers for `getEvents` now accept optional `from`/`to` parameters for consistent time-bounded queries across the SDK.
+
+### Changed
+
+- Default behavior for series instance listing now returns only ongoing and upcoming events (instead of all past and future instances), matching typical calendar UX expectations.
+
 ## [2.2.0] - 2026-03-02
 
 ### Added

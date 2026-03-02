@@ -116,13 +116,15 @@ export const EventSeriesApiAxiosParamCreator = function (configuration?: Configu
             };
         },
         /**
-         * Returns all event instances (past and upcoming) belonging to this series, ordered by start time.
-         * @summary List all event instances in a series
+         * Returns event instances belonging to this series, ordered by start time. Defaults to only ongoing/upcoming instances.
+         * @summary List event instances in a series
          * @param {string} seriesId 
+         * @param {string} [from] ISO 8601 start of range (events ending after this time). Default: NOW()
+         * @param {string} [to] ISO 8601 end of range (events starting before this time)
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getInstances: async (seriesId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getInstances: async (seriesId: string, from?: string, to?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'seriesId' is not null or undefined
             assertParamExists('getInstances', 'seriesId', seriesId)
             const localVarPath = `/event-series/{seriesId}/events`
@@ -140,6 +142,14 @@ export const EventSeriesApiAxiosParamCreator = function (configuration?: Configu
 
             // authentication api_key required
             await setApiKeyToObject(localVarHeaderParameter, "X-Proxima-Nexus-Api-Key", configuration)
+
+            if (from !== undefined) {
+                localVarQueryParameter['from'] = from;
+            }
+
+            if (to !== undefined) {
+                localVarQueryParameter['to'] = to;
+            }
 
             localVarHeaderParameter['Accept'] = 'application/json';
 
@@ -279,14 +289,16 @@ export const EventSeriesApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * Returns all event instances (past and upcoming) belonging to this series, ordered by start time.
-         * @summary List all event instances in a series
+         * Returns event instances belonging to this series, ordered by start time. Defaults to only ongoing/upcoming instances.
+         * @summary List event instances in a series
          * @param {string} seriesId 
+         * @param {string} [from] ISO 8601 start of range (events ending after this time). Default: NOW()
+         * @param {string} [to] ISO 8601 end of range (events starting before this time)
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getInstances(seriesId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<EventDto>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getInstances(seriesId, options);
+        async getInstances(seriesId: string, from?: string, to?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<EventDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getInstances(seriesId, from, to, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['EventSeriesApi.getInstances']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -351,14 +363,16 @@ export const EventSeriesApiFactory = function (configuration?: Configuration, ba
             return localVarFp.get(seriesId, options).then((request) => request(axios, basePath));
         },
         /**
-         * Returns all event instances (past and upcoming) belonging to this series, ordered by start time.
-         * @summary List all event instances in a series
+         * Returns event instances belonging to this series, ordered by start time. Defaults to only ongoing/upcoming instances.
+         * @summary List event instances in a series
          * @param {string} seriesId 
+         * @param {string} [from] ISO 8601 start of range (events ending after this time). Default: NOW()
+         * @param {string} [to] ISO 8601 end of range (events starting before this time)
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getInstances(seriesId: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<EventDto>> {
-            return localVarFp.getInstances(seriesId, options).then((request) => request(axios, basePath));
+        getInstances(seriesId: string, from?: string, to?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<EventDto>> {
+            return localVarFp.getInstances(seriesId, from, to, options).then((request) => request(axios, basePath));
         },
         /**
          * Deletes the series and all upcoming event instances. Past instances (already started) are preserved.
@@ -410,13 +424,15 @@ export interface EventSeriesApiInterface {
     get(seriesId: string, options?: RawAxiosRequestConfig): AxiosPromise<EventSeriesDto>;
 
     /**
-     * Returns all event instances (past and upcoming) belonging to this series, ordered by start time.
-     * @summary List all event instances in a series
+     * Returns event instances belonging to this series, ordered by start time. Defaults to only ongoing/upcoming instances.
+     * @summary List event instances in a series
      * @param {string} seriesId 
+     * @param {string} [from] ISO 8601 start of range (events ending after this time). Default: NOW()
+     * @param {string} [to] ISO 8601 end of range (events starting before this time)
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getInstances(seriesId: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<EventDto>>;
+    getInstances(seriesId: string, from?: string, to?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<EventDto>>;
 
     /**
      * Deletes the series and all upcoming event instances. Past instances (already started) are preserved.
@@ -469,14 +485,16 @@ export class EventSeriesApi extends BaseAPI implements EventSeriesApiInterface {
     }
 
     /**
-     * Returns all event instances (past and upcoming) belonging to this series, ordered by start time.
-     * @summary List all event instances in a series
+     * Returns event instances belonging to this series, ordered by start time. Defaults to only ongoing/upcoming instances.
+     * @summary List event instances in a series
      * @param {string} seriesId 
+     * @param {string} [from] ISO 8601 start of range (events ending after this time). Default: NOW()
+     * @param {string} [to] ISO 8601 end of range (events starting before this time)
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public getInstances(seriesId: string, options?: RawAxiosRequestConfig) {
-        return EventSeriesApiFp(this.configuration).getInstances(seriesId, options).then((request) => request(this.axios, this.basePath));
+    public getInstances(seriesId: string, from?: string, to?: string, options?: RawAxiosRequestConfig) {
+        return EventSeriesApiFp(this.configuration).getInstances(seriesId, from, to, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

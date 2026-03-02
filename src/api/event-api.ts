@@ -370,11 +370,13 @@ export const EventApiAxiosParamCreator = function (configuration?: Configuration
          * @param {number} [minLongitude] Minimum longitude for bounding box
          * @param {number} [maxLongitude] Maximum longitude for bounding box
          * @param {number} [limit] Limit results (1-1000)
+         * @param {string} [from] ISO 8601 date — filter events ending after this time
+         * @param {string} [to] ISO 8601 date — filter events starting before this time
          * @param {string} [xProximaNexusRequesterUserId] ID of the user searching for events. If set, events will be filtered to only include events that the user can see, and requesterConnection will be set on the results.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        search: async (displayName?: string, latitude?: number, longitude?: number, radius?: number, minLatitude?: number, maxLatitude?: number, minLongitude?: number, maxLongitude?: number, limit?: number, xProximaNexusRequesterUserId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        search: async (displayName?: string, latitude?: number, longitude?: number, radius?: number, minLatitude?: number, maxLatitude?: number, minLongitude?: number, maxLongitude?: number, limit?: number, from?: string, to?: string, xProximaNexusRequesterUserId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/event`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -424,6 +426,14 @@ export const EventApiAxiosParamCreator = function (configuration?: Configuration
 
             if (limit !== undefined) {
                 localVarQueryParameter['limit'] = limit;
+            }
+
+            if (from !== undefined) {
+                localVarQueryParameter['from'] = from;
+            }
+
+            if (to !== undefined) {
+                localVarQueryParameter['to'] = to;
             }
 
             localVarHeaderParameter['Accept'] = 'application/json';
@@ -612,12 +622,14 @@ export const EventApiFp = function(configuration?: Configuration) {
          * @param {number} [minLongitude] Minimum longitude for bounding box
          * @param {number} [maxLongitude] Maximum longitude for bounding box
          * @param {number} [limit] Limit results (1-1000)
+         * @param {string} [from] ISO 8601 date — filter events ending after this time
+         * @param {string} [to] ISO 8601 date — filter events starting before this time
          * @param {string} [xProximaNexusRequesterUserId] ID of the user searching for events. If set, events will be filtered to only include events that the user can see, and requesterConnection will be set on the results.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async search(displayName?: string, latitude?: number, longitude?: number, radius?: number, minLatitude?: number, maxLatitude?: number, minLongitude?: number, maxLongitude?: number, limit?: number, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<EventDto>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.search(displayName, latitude, longitude, radius, minLatitude, maxLatitude, minLongitude, maxLongitude, limit, xProximaNexusRequesterUserId, options);
+        async search(displayName?: string, latitude?: number, longitude?: number, radius?: number, minLatitude?: number, maxLatitude?: number, minLongitude?: number, maxLongitude?: number, limit?: number, from?: string, to?: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<EventDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.search(displayName, latitude, longitude, radius, minLatitude, maxLatitude, minLongitude, maxLongitude, limit, from, to, xProximaNexusRequesterUserId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['EventApi.search']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -740,12 +752,14 @@ export const EventApiFactory = function (configuration?: Configuration, basePath
          * @param {number} [minLongitude] Minimum longitude for bounding box
          * @param {number} [maxLongitude] Maximum longitude for bounding box
          * @param {number} [limit] Limit results (1-1000)
+         * @param {string} [from] ISO 8601 date — filter events ending after this time
+         * @param {string} [to] ISO 8601 date — filter events starting before this time
          * @param {string} [xProximaNexusRequesterUserId] ID of the user searching for events. If set, events will be filtered to only include events that the user can see, and requesterConnection will be set on the results.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        search(displayName?: string, latitude?: number, longitude?: number, radius?: number, minLatitude?: number, maxLatitude?: number, minLongitude?: number, maxLongitude?: number, limit?: number, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<EventDto>> {
-            return localVarFp.search(displayName, latitude, longitude, radius, minLatitude, maxLatitude, minLongitude, maxLongitude, limit, xProximaNexusRequesterUserId, options).then((request) => request(axios, basePath));
+        search(displayName?: string, latitude?: number, longitude?: number, radius?: number, minLatitude?: number, maxLatitude?: number, minLongitude?: number, maxLongitude?: number, limit?: number, from?: string, to?: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<EventDto>> {
+            return localVarFp.search(displayName, latitude, longitude, radius, minLatitude, maxLatitude, minLongitude, maxLongitude, limit, from, to, xProximaNexusRequesterUserId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -853,11 +867,13 @@ export interface EventApiInterface {
      * @param {number} [minLongitude] Minimum longitude for bounding box
      * @param {number} [maxLongitude] Maximum longitude for bounding box
      * @param {number} [limit] Limit results (1-1000)
+     * @param {string} [from] ISO 8601 date — filter events ending after this time
+     * @param {string} [to] ISO 8601 date — filter events starting before this time
      * @param {string} [xProximaNexusRequesterUserId] ID of the user searching for events. If set, events will be filtered to only include events that the user can see, and requesterConnection will be set on the results.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    search(displayName?: string, latitude?: number, longitude?: number, radius?: number, minLatitude?: number, maxLatitude?: number, minLongitude?: number, maxLongitude?: number, limit?: number, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<EventDto>>;
+    search(displayName?: string, latitude?: number, longitude?: number, radius?: number, minLatitude?: number, maxLatitude?: number, minLongitude?: number, maxLongitude?: number, limit?: number, from?: string, to?: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<EventDto>>;
 
     /**
      * 
@@ -977,12 +993,14 @@ export class EventApi extends BaseAPI implements EventApiInterface {
      * @param {number} [minLongitude] Minimum longitude for bounding box
      * @param {number} [maxLongitude] Maximum longitude for bounding box
      * @param {number} [limit] Limit results (1-1000)
+     * @param {string} [from] ISO 8601 date — filter events ending after this time
+     * @param {string} [to] ISO 8601 date — filter events starting before this time
      * @param {string} [xProximaNexusRequesterUserId] ID of the user searching for events. If set, events will be filtered to only include events that the user can see, and requesterConnection will be set on the results.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public search(displayName?: string, latitude?: number, longitude?: number, radius?: number, minLatitude?: number, maxLatitude?: number, minLongitude?: number, maxLongitude?: number, limit?: number, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig) {
-        return EventApiFp(this.configuration).search(displayName, latitude, longitude, radius, minLatitude, maxLatitude, minLongitude, maxLongitude, limit, xProximaNexusRequesterUserId, options).then((request) => request(this.axios, this.basePath));
+    public search(displayName?: string, latitude?: number, longitude?: number, radius?: number, minLatitude?: number, maxLatitude?: number, minLongitude?: number, maxLongitude?: number, limit?: number, from?: string, to?: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig) {
+        return EventApiFp(this.configuration).search(displayName, latitude, longitude, radius, minLatitude, maxLatitude, minLongitude, maxLongitude, limit, from, to, xProximaNexusRequesterUserId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

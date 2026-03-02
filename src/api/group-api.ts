@@ -276,11 +276,13 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
          * 
          * @summary Get events of a group
          * @param {string} groupId 
+         * @param {string} [from] ISO 8601 start of range (events ending after this time). Default: NOW()
+         * @param {string} [to] ISO 8601 end of range (events starting before this time)
          * @param {string} [xProximaNexusRequesterUserId] ID of the user getting events of the group. If set, events will be filtered to only include events that the user can see, and requesterConnection will be set on the results.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getEvents: async (groupId: string, xProximaNexusRequesterUserId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getEvents: async (groupId: string, from?: string, to?: string, xProximaNexusRequesterUserId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'groupId' is not null or undefined
             assertParamExists('getEvents', 'groupId', groupId)
             const localVarPath = `/group/{groupId}/events`
@@ -298,6 +300,14 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
 
             // authentication api_key required
             await setApiKeyToObject(localVarHeaderParameter, "X-Proxima-Nexus-Api-Key", configuration)
+
+            if (from !== undefined) {
+                localVarQueryParameter['from'] = from;
+            }
+
+            if (to !== undefined) {
+                localVarQueryParameter['to'] = to;
+            }
 
             localVarHeaderParameter['Accept'] = 'application/json';
 
@@ -418,11 +428,13 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
          * @param {number} [minLongitude] Minimum longitude for bounding box
          * @param {number} [maxLongitude] Maximum longitude for bounding box
          * @param {number} [limit] Limit results (1-1000)
+         * @param {string} [from] ISO 8601 date — filter events ending after this time
+         * @param {string} [to] ISO 8601 date — filter events starting before this time
          * @param {string} [xProximaNexusRequesterUserId] ID of the user searching for groups. If set, groups will be filtered to only include groups that the user can see, and requesterConnection will be set on the results.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        search: async (displayName?: string, latitude?: number, longitude?: number, radius?: number, minLatitude?: number, maxLatitude?: number, minLongitude?: number, maxLongitude?: number, limit?: number, xProximaNexusRequesterUserId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        search: async (displayName?: string, latitude?: number, longitude?: number, radius?: number, minLatitude?: number, maxLatitude?: number, minLongitude?: number, maxLongitude?: number, limit?: number, from?: string, to?: string, xProximaNexusRequesterUserId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/group`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -472,6 +484,14 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
 
             if (limit !== undefined) {
                 localVarQueryParameter['limit'] = limit;
+            }
+
+            if (from !== undefined) {
+                localVarQueryParameter['from'] = from;
+            }
+
+            if (to !== undefined) {
+                localVarQueryParameter['to'] = to;
             }
 
             localVarHeaderParameter['Accept'] = 'application/json';
@@ -623,12 +643,14 @@ export const GroupApiFp = function(configuration?: Configuration) {
          * 
          * @summary Get events of a group
          * @param {string} groupId 
+         * @param {string} [from] ISO 8601 start of range (events ending after this time). Default: NOW()
+         * @param {string} [to] ISO 8601 end of range (events starting before this time)
          * @param {string} [xProximaNexusRequesterUserId] ID of the user getting events of the group. If set, events will be filtered to only include events that the user can see, and requesterConnection will be set on the results.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getEvents(groupId: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<EventEntityConnectionDto>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getEvents(groupId, xProximaNexusRequesterUserId, options);
+        async getEvents(groupId: string, from?: string, to?: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<EventEntityConnectionDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getEvents(groupId, from, to, xProximaNexusRequesterUserId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['GroupApi.getEvents']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -675,12 +697,14 @@ export const GroupApiFp = function(configuration?: Configuration) {
          * @param {number} [minLongitude] Minimum longitude for bounding box
          * @param {number} [maxLongitude] Maximum longitude for bounding box
          * @param {number} [limit] Limit results (1-1000)
+         * @param {string} [from] ISO 8601 date — filter events ending after this time
+         * @param {string} [to] ISO 8601 date — filter events starting before this time
          * @param {string} [xProximaNexusRequesterUserId] ID of the user searching for groups. If set, groups will be filtered to only include groups that the user can see, and requesterConnection will be set on the results.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async search(displayName?: string, latitude?: number, longitude?: number, radius?: number, minLatitude?: number, maxLatitude?: number, minLongitude?: number, maxLongitude?: number, limit?: number, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<GroupDto>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.search(displayName, latitude, longitude, radius, minLatitude, maxLatitude, minLongitude, maxLongitude, limit, xProximaNexusRequesterUserId, options);
+        async search(displayName?: string, latitude?: number, longitude?: number, radius?: number, minLatitude?: number, maxLatitude?: number, minLongitude?: number, maxLongitude?: number, limit?: number, from?: string, to?: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<GroupDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.search(displayName, latitude, longitude, radius, minLatitude, maxLatitude, minLongitude, maxLongitude, limit, from, to, xProximaNexusRequesterUserId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['GroupApi.search']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -772,12 +796,14 @@ export const GroupApiFactory = function (configuration?: Configuration, basePath
          * 
          * @summary Get events of a group
          * @param {string} groupId 
+         * @param {string} [from] ISO 8601 start of range (events ending after this time). Default: NOW()
+         * @param {string} [to] ISO 8601 end of range (events starting before this time)
          * @param {string} [xProximaNexusRequesterUserId] ID of the user getting events of the group. If set, events will be filtered to only include events that the user can see, and requesterConnection will be set on the results.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getEvents(groupId: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<EventEntityConnectionDto>> {
-            return localVarFp.getEvents(groupId, xProximaNexusRequesterUserId, options).then((request) => request(axios, basePath));
+        getEvents(groupId: string, from?: string, to?: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<EventEntityConnectionDto>> {
+            return localVarFp.getEvents(groupId, from, to, xProximaNexusRequesterUserId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -815,12 +841,14 @@ export const GroupApiFactory = function (configuration?: Configuration, basePath
          * @param {number} [minLongitude] Minimum longitude for bounding box
          * @param {number} [maxLongitude] Maximum longitude for bounding box
          * @param {number} [limit] Limit results (1-1000)
+         * @param {string} [from] ISO 8601 date — filter events ending after this time
+         * @param {string} [to] ISO 8601 date — filter events starting before this time
          * @param {string} [xProximaNexusRequesterUserId] ID of the user searching for groups. If set, groups will be filtered to only include groups that the user can see, and requesterConnection will be set on the results.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        search(displayName?: string, latitude?: number, longitude?: number, radius?: number, minLatitude?: number, maxLatitude?: number, minLongitude?: number, maxLongitude?: number, limit?: number, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<GroupDto>> {
-            return localVarFp.search(displayName, latitude, longitude, radius, minLatitude, maxLatitude, minLongitude, maxLongitude, limit, xProximaNexusRequesterUserId, options).then((request) => request(axios, basePath));
+        search(displayName?: string, latitude?: number, longitude?: number, radius?: number, minLatitude?: number, maxLatitude?: number, minLongitude?: number, maxLongitude?: number, limit?: number, from?: string, to?: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<GroupDto>> {
+            return localVarFp.search(displayName, latitude, longitude, radius, minLatitude, maxLatitude, minLongitude, maxLongitude, limit, from, to, xProximaNexusRequesterUserId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -899,11 +927,13 @@ export interface GroupApiInterface {
      * 
      * @summary Get events of a group
      * @param {string} groupId 
+     * @param {string} [from] ISO 8601 start of range (events ending after this time). Default: NOW()
+     * @param {string} [to] ISO 8601 end of range (events starting before this time)
      * @param {string} [xProximaNexusRequesterUserId] ID of the user getting events of the group. If set, events will be filtered to only include events that the user can see, and requesterConnection will be set on the results.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getEvents(groupId: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<EventEntityConnectionDto>>;
+    getEvents(groupId: string, from?: string, to?: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<EventEntityConnectionDto>>;
 
     /**
      * 
@@ -939,11 +969,13 @@ export interface GroupApiInterface {
      * @param {number} [minLongitude] Minimum longitude for bounding box
      * @param {number} [maxLongitude] Maximum longitude for bounding box
      * @param {number} [limit] Limit results (1-1000)
+     * @param {string} [from] ISO 8601 date — filter events ending after this time
+     * @param {string} [to] ISO 8601 date — filter events starting before this time
      * @param {string} [xProximaNexusRequesterUserId] ID of the user searching for groups. If set, groups will be filtered to only include groups that the user can see, and requesterConnection will be set on the results.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    search(displayName?: string, latitude?: number, longitude?: number, radius?: number, minLatitude?: number, maxLatitude?: number, minLongitude?: number, maxLongitude?: number, limit?: number, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<GroupDto>>;
+    search(displayName?: string, latitude?: number, longitude?: number, radius?: number, minLatitude?: number, maxLatitude?: number, minLongitude?: number, maxLongitude?: number, limit?: number, from?: string, to?: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<GroupDto>>;
 
     /**
      * 
@@ -1030,12 +1062,14 @@ export class GroupApi extends BaseAPI implements GroupApiInterface {
      * 
      * @summary Get events of a group
      * @param {string} groupId 
+     * @param {string} [from] ISO 8601 start of range (events ending after this time). Default: NOW()
+     * @param {string} [to] ISO 8601 end of range (events starting before this time)
      * @param {string} [xProximaNexusRequesterUserId] ID of the user getting events of the group. If set, events will be filtered to only include events that the user can see, and requesterConnection will be set on the results.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public getEvents(groupId: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig) {
-        return GroupApiFp(this.configuration).getEvents(groupId, xProximaNexusRequesterUserId, options).then((request) => request(this.axios, this.basePath));
+    public getEvents(groupId: string, from?: string, to?: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig) {
+        return GroupApiFp(this.configuration).getEvents(groupId, from, to, xProximaNexusRequesterUserId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -1076,12 +1110,14 @@ export class GroupApi extends BaseAPI implements GroupApiInterface {
      * @param {number} [minLongitude] Minimum longitude for bounding box
      * @param {number} [maxLongitude] Maximum longitude for bounding box
      * @param {number} [limit] Limit results (1-1000)
+     * @param {string} [from] ISO 8601 date — filter events ending after this time
+     * @param {string} [to] ISO 8601 date — filter events starting before this time
      * @param {string} [xProximaNexusRequesterUserId] ID of the user searching for groups. If set, groups will be filtered to only include groups that the user can see, and requesterConnection will be set on the results.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public search(displayName?: string, latitude?: number, longitude?: number, radius?: number, minLatitude?: number, maxLatitude?: number, minLongitude?: number, maxLongitude?: number, limit?: number, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig) {
-        return GroupApiFp(this.configuration).search(displayName, latitude, longitude, radius, minLatitude, maxLatitude, minLongitude, maxLongitude, limit, xProximaNexusRequesterUserId, options).then((request) => request(this.axios, this.basePath));
+    public search(displayName?: string, latitude?: number, longitude?: number, radius?: number, minLatitude?: number, maxLatitude?: number, minLongitude?: number, maxLongitude?: number, limit?: number, from?: string, to?: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig) {
+        return GroupApiFp(this.configuration).search(displayName, latitude, longitude, radius, minLatitude, maxLatitude, minLongitude, maxLongitude, limit, from, to, xProximaNexusRequesterUserId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
