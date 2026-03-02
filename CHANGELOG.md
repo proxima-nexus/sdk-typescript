@@ -5,6 +5,19 @@ All notable changes to the Proxima Nexus TypeScript SDK are documented in this f
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - 2026-03-02
+
+### Added
+
+- Support for **event series** (recurring events) via a new `EventSeriesApi` on `ProximaNexusClient` and `EnhancedEventSeriesApi` on `EnhancedProximaNexusClient`.
+- New DTOs for event series: `CreateEventSeriesDto`, `EventSeriesDto`, and `UpdateEventSeriesDto`, plus a `seriesId` field on `EventDto` to link event instances back to their series.
+- Enhanced client helpers to create, update, delete, and list instances in a series (`createSeries`, `getSeries`, `updateSeries`, `deleteSeries`, `getInstances`).
+
+### Changed
+
+- Relaxed `UpdateEventDto`, `UpdateGroupDto`, and `UpdateUserDto` so that most fields are optional, making partial updates easier and better aligned with the underlying API.
+- Clarified `EventApi.update` behavior for series instances: only fields included in the request body are treated as overrides and will no longer be updated by series-level changes.
+
 ## [2.1.1] - 2026-02-04
 
 ### Changed

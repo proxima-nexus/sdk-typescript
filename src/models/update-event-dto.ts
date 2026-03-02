@@ -25,7 +25,7 @@ export interface UpdateEventDto {
     /**
      * Display name
      */
-    'displayName': string;
+    'displayName'?: string;
     /**
      * Optional location information
      */
@@ -41,15 +41,15 @@ export interface UpdateEventDto {
     /**
      * Start time (ISO 8601)
      */
-    'startTime': string;
+    'startTime'?: string;
     /**
      * End time (ISO 8601)
      */
-    'endTime': string;
+    'endTime'?: string;
     /**
      * Event type
      */
-    'type': string;
+    'type'?: string;
     /**
      * Maximum number of attendees allowed (null = unlimited)
      */

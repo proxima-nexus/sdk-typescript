@@ -20,7 +20,7 @@ import type { EntityConnectionDto } from './entity-connection-dto';
 // @ts-ignore
 import type { LocationDto } from './location-dto';
 
-export interface EventDto {
+export interface EventSeriesDto {
     /**
      * Unique identifier for the entity
      */
@@ -32,7 +32,7 @@ export interface EventDto {
     /**
      * Visibility of the entity
      */
-    'visibility'?: EventDtoVisibilityEnum;
+    'visibility'?: EventSeriesDtoVisibilityEnum;
     /**
      * Description of the entity
      */
@@ -58,36 +58,40 @@ export interface EventDto {
      */
     'requesterConnection'?: EntityConnectionDto;
     /**
-     * Start time (ISO 8601)
-     */
-    'startTime': string;
-    /**
-     * End time (ISO 8601)
-     */
-    'endTime': string;
-    /**
      * Event type
      */
     'type': string;
     /**
-     * Identifier of associated group which owns the event. Owners/admins of the group will be admins of the event.
+     * iCal RRULE string defining the recurrence pattern
+     */
+    'rrule': string;
+    /**
+     * Date of the first occurrence (YYYY-MM-DD, local in timezone)
+     */
+    'startDate': string;
+    /**
+     * Start time of each instance in HH:MM format
+     */
+    'instanceStartTime': string;
+    /**
+     * End time of each instance in HH:MM format
+     */
+    'instanceEndTime': string;
+    /**
+     * IANA timezone for all instances
+     */
+    'timezone': string;
+    /**
+     * Identifier of the associated group
      */
     'associatedGroupId'?: string;
     /**
-     * Number of active attendees
-     */
-    'numAttendees'?: number;
-    /**
-     * Maximum number of attendees allowed (null = unlimited)
+     * Maximum number of attendees per event instance
      */
     'maxNumAttendees'?: number;
-    /**
-     * ID of the event series this instance belongs to, if any
-     */
-    'seriesId'?: string;
 }
 
-export enum EventDtoVisibilityEnum {
+export enum EventSeriesDtoVisibilityEnum {
     PUBLIC = 'PUBLIC',
     PRIVATE = 'PRIVATE'
 }

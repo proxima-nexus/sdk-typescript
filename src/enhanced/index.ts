@@ -1,9 +1,11 @@
 import { Configuration } from '../configuration';
 import { UserApi } from '../api/user-api';
 import { EventApi } from '../api/event-api';
+import { EventSeriesApi } from '../api/event-series-api';
 import { GroupApi } from '../api/group-api';
 import { EnhancedUserApi } from './enhanced-user-api';
 import { EnhancedEventApi } from './enhanced-event-api';
+import { EnhancedEventSeriesApi } from './enhanced-event-series-api';
 import { EnhancedGroupApi } from './enhanced-group-api';
 
 /**
@@ -19,6 +21,7 @@ export interface EnhancedClientConfig {
 
 export { EnhancedUserApi } from './enhanced-user-api';
 export { EnhancedEventApi } from './enhanced-event-api';
+export { EnhancedEventSeriesApi } from './enhanced-event-series-api';
 export { EnhancedGroupApi } from './enhanced-group-api';
 export {
   NotFoundError,
@@ -41,6 +44,7 @@ export * from './types';
 export class EnhancedProximaNexusClient {
   public readonly users: EnhancedUserApi;
   public readonly events: EnhancedEventApi;
+  public readonly eventSeries: EnhancedEventSeriesApi;
   public readonly groups: EnhancedGroupApi;
   public readonly base: InstanceType<typeof import('../index').ProximaNexusClient>;
 
@@ -63,9 +67,11 @@ export class EnhancedProximaNexusClient {
     }
     const userApi = this.base.users;
     const eventApi = this.base.events;
+    const eventSeriesApi = this.base.eventSeries;
     const groupApi = this.base.groups;
     this.users = new EnhancedUserApi(userApi);
     this.events = new EnhancedEventApi(eventApi);
+    this.eventSeries = new EnhancedEventSeriesApi(eventSeriesApi);
     this.groups = new EnhancedGroupApi(groupApi);
   }
 }

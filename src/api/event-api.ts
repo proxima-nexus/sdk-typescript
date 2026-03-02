@@ -442,7 +442,7 @@ export const EventApiAxiosParamCreator = function (configuration?: Configuration
         },
         /**
          * 
-         * @summary Update an event
+         * @summary Update an event. For series instances, only the fields provided in the request body will be marked as overridden and will no longer be propagated by series-level updates.
          * @param {string} eventId 
          * @param {string} xProximaNexusRequesterUserId ID of the user updating the event
          * @param {UpdateEventDto} updateEventDto 
@@ -624,7 +624,7 @@ export const EventApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @summary Update an event
+         * @summary Update an event. For series instances, only the fields provided in the request body will be marked as overridden and will no longer be propagated by series-level updates.
          * @param {string} eventId 
          * @param {string} xProximaNexusRequesterUserId ID of the user updating the event
          * @param {UpdateEventDto} updateEventDto 
@@ -749,7 +749,7 @@ export const EventApiFactory = function (configuration?: Configuration, basePath
         },
         /**
          * 
-         * @summary Update an event
+         * @summary Update an event. For series instances, only the fields provided in the request body will be marked as overridden and will no longer be propagated by series-level updates.
          * @param {string} eventId 
          * @param {string} xProximaNexusRequesterUserId ID of the user updating the event
          * @param {UpdateEventDto} updateEventDto 
@@ -861,7 +861,7 @@ export interface EventApiInterface {
 
     /**
      * 
-     * @summary Update an event
+     * @summary Update an event. For series instances, only the fields provided in the request body will be marked as overridden and will no longer be propagated by series-level updates.
      * @param {string} eventId 
      * @param {string} xProximaNexusRequesterUserId ID of the user updating the event
      * @param {UpdateEventDto} updateEventDto 
@@ -987,7 +987,7 @@ export class EventApi extends BaseAPI implements EventApiInterface {
 
     /**
      * 
-     * @summary Update an event
+     * @summary Update an event. For series instances, only the fields provided in the request body will be marked as overridden and will no longer be propagated by series-level updates.
      * @param {string} eventId 
      * @param {string} xProximaNexusRequesterUserId ID of the user updating the event
      * @param {UpdateEventDto} updateEventDto 

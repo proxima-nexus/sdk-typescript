@@ -1,13 +1,14 @@
 import { Configuration, ConfigurationParameters } from './configuration';
 import { UserApi } from './api/user-api';
 import { EventApi } from './api/event-api';
+import { EventSeriesApi } from './api/event-series-api';
 import { GroupApi } from './api/group-api';
 
 // Export all types
 export * from './models';
 
 // Export API classes
-export { UserApi, EventApi, GroupApi };
+export { UserApi, EventApi, EventSeriesApi, GroupApi };
 export { Configuration, type ConfigurationParameters };
 
 /**
@@ -41,6 +42,7 @@ export interface ProximaNexusClientConfig {
 export class ProximaNexusClient {
   public readonly users: UserApi;
   public readonly events: EventApi;
+  public readonly eventSeries: EventSeriesApi;
   public readonly groups: GroupApi;
 
   constructor(config: ProximaNexusClientConfig) {
@@ -55,6 +57,7 @@ export class ProximaNexusClient {
 
     this.users = new UserApi(configuration);
     this.events = new EventApi(configuration);
+    this.eventSeries = new EventSeriesApi(configuration);
     this.groups = new GroupApi(configuration);
   }
 }
@@ -66,6 +69,7 @@ export {
   EnhancedProximaNexusClient,
   EnhancedUserApi,
   EnhancedEventApi,
+  EnhancedEventSeriesApi,
   EnhancedGroupApi,
   NotFoundError,
   UnauthorizedError,

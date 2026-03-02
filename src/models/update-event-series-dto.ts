@@ -17,11 +17,11 @@
 // @ts-ignore
 import type { LocationDto } from './location-dto';
 
-export interface UpdateGroupDto {
+export interface UpdateEventSeriesDto {
     /**
      * Visibility of the entity
      */
-    'visibility'?: UpdateGroupDtoVisibilityEnum;
+    'visibility'?: UpdateEventSeriesDtoVisibilityEnum;
     /**
      * Display name
      */
@@ -39,20 +39,19 @@ export interface UpdateGroupDto {
      */
     'tags'?: Array<string>;
     /**
-     * Group type
+     * Event type
      */
-    'type': UpdateGroupDtoTypeEnum;
+    'type'?: string;
+    /**
+     * Maximum number of attendees per event instance (null = unlimited)
+     */
+    'maxNumAttendees'?: number;
 }
 
-export enum UpdateGroupDtoVisibilityEnum {
+export enum UpdateEventSeriesDtoVisibilityEnum {
     public = 'public',
     connections = 'connections',
     hidden = 'hidden'
-}
-export enum UpdateGroupDtoTypeEnum {
-    open = 'open',
-    request = 'request',
-    invite = 'invite'
 }
 
 

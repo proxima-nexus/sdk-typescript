@@ -146,8 +146,8 @@ fs.cpSync(path.join(generatedDir, 'api'), srcApiDir, { recursive: true });
 
 // Step 6: Simplify API method names (remove Controller prefix)
 console.log('Simplifying API method names...');
-const apiFiles = ['event-api.ts', 'user-api.ts', 'group-api.ts'];
-const controllerPrefixes = ['eventController', 'userController', 'groupController'];
+const apiFiles = ['event-api.ts', 'event-series-api.ts', 'user-api.ts', 'group-api.ts'];
+const controllerPrefixes = ['eventController', 'eventSeriesController', 'userController', 'groupController'];
 
 apiFiles.forEach(apiFile => {
   const apiFilePath = path.join(srcApiDir, apiFile);

@@ -25,7 +25,7 @@ export interface UpdateUserDto {
     /**
      * Display name
      */
-    'displayName': string;
+    'displayName'?: string;
     /**
      * Optional location information
      */
