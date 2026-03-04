@@ -24,7 +24,8 @@ export interface MutateEventEntityConnectionDto {
 export enum MutateEventEntityConnectionDtoTypeEnum {
     attendee = 'attendee',
     admin = 'admin',
-    owner = 'owner'
+    owner = 'owner',
+    associated_group = 'associated_group'
 }
 
 

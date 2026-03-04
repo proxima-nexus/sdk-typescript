@@ -1020,5 +1020,6 @@ export class EventApi extends BaseAPI implements EventApiInterface {
 export enum EventControllerGetConnectionsTypeEnum {
     attendee = 'attendee',
     admin = 'admin',
-    owner = 'owner'
+    owner = 'owner',
+    associated_group = 'associated_group'
 }

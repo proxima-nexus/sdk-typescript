@@ -41,6 +41,7 @@ export enum EventSeriesEntityConnectionDtoTypeEnum {
     attendee = 'attendee',
     admin = 'admin',
     owner = 'owner',
+    associated_group = 'associated_group',
     member = 'member',
     friend = 'friend',
     blocked = 'blocked',

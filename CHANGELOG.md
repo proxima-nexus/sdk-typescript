@@ -5,6 +5,13 @@ All notable changes to the Proxima Nexus TypeScript SDK are documented in this f
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.4.1] - 2026-03-04
+
+### Added
+
+- New `associated_group` connection type across entity connection enums (`EntityConnectionDtoTypeEnum`, `EventEntityConnectionDtoTypeEnum`, `EventSeriesEntityConnectionDtoTypeEnum`, `GroupEntityConnectionDtoTypeEnum`, `UserEntityConnectionDtoTypeEnum`, and `MutateEventEntityConnectionDtoTypeEnum`) to represent events and series associated with a group.
+- Updated `EventControllerGetConnectionsTypeEnum` to include `associated_group`, keeping controller-level connection filters aligned with the DTOs.
+
 ## [2.4.0] - 2026-03-04
 
 ### Added
