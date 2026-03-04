@@ -28,6 +28,8 @@ import type { EntityConnectionDto } from '../models';
 // @ts-ignore
 import type { EventEntityConnectionDto } from '../models';
 // @ts-ignore
+import type { EventSeriesEntityConnectionDto } from '../models';
+// @ts-ignore
 import type { GetGroupsDto } from '../models';
 // @ts-ignore
 import type { GroupDto } from '../models';
@@ -263,6 +265,43 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
             if (xProximaNexusRequesterUserId != null) {
                 localVarHeaderParameter['X-Proxima-Nexus-Requester-User-Id'] = String(xProximaNexusRequesterUserId);
             }
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Get event series of a group
+         * @param {string} groupId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getEventSeries: async (groupId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'groupId' is not null or undefined
+            assertParamExists('getEventSeries', 'groupId', groupId)
+            const localVarPath = `/group/{groupId}/event-series`
+                .replace(`{${"groupId"}}`, encodeURIComponent(String(groupId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication api_key required
+            await setApiKeyToObject(localVarHeaderParameter, "X-Proxima-Nexus-Api-Key", configuration)
+
+            localVarHeaderParameter['Accept'] = 'application/json';
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -641,6 +680,19 @@ export const GroupApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary Get event series of a group
+         * @param {string} groupId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getEventSeries(groupId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<EventSeriesEntityConnectionDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getEventSeries(groupId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GroupApi.getEventSeries']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
          * @summary Get events of a group
          * @param {string} groupId 
          * @param {string} [from] ISO 8601 start of range (events ending after this time). Default: NOW()
@@ -794,6 +846,16 @@ export const GroupApiFactory = function (configuration?: Configuration, basePath
         },
         /**
          * 
+         * @summary Get event series of a group
+         * @param {string} groupId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getEventSeries(groupId: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<EventSeriesEntityConnectionDto>> {
+            return localVarFp.getEventSeries(groupId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary Get events of a group
          * @param {string} groupId 
          * @param {string} [from] ISO 8601 start of range (events ending after this time). Default: NOW()
@@ -922,6 +984,15 @@ export interface GroupApiInterface {
      * @throws {RequiredError}
      */
     getConnections(groupId: string, state?: Array<GroupControllerGetConnectionsStateEnum>, type?: Array<GroupControllerGetConnectionsTypeEnum>, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<UserEntityConnectionDto>>;
+
+    /**
+     * 
+     * @summary Get event series of a group
+     * @param {string} groupId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getEventSeries(groupId: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<EventSeriesEntityConnectionDto>>;
 
     /**
      * 
@@ -1056,6 +1127,17 @@ export class GroupApi extends BaseAPI implements GroupApiInterface {
      */
     public getConnections(groupId: string, state?: Array<GroupControllerGetConnectionsStateEnum>, type?: Array<GroupControllerGetConnectionsTypeEnum>, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig) {
         return GroupApiFp(this.configuration).getConnections(groupId, state, type, xProximaNexusRequesterUserId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Get event series of a group
+     * @param {string} groupId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public getEventSeries(groupId: string, options?: RawAxiosRequestConfig) {
+        return GroupApiFp(this.configuration).getEventSeries(groupId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

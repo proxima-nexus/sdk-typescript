@@ -5,6 +5,14 @@ All notable changes to the Proxima Nexus TypeScript SDK are documented in this f
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.4.0] - 2026-03-04
+
+### Added
+
+- Batch lookup for **event series** via a new `getBatch` method on `EventSeriesApi` and a corresponding `getBatch(seriesIds: string[])` helper on `EnhancedEventSeriesApi`.
+- Group-level event series listing through `GroupApi.getEventSeries` and the enhanced helper `getGroupEventSeries` on `EnhancedGroupApi`.
+- New DTOs for series queries and connections: `GetEventSeriesDto` and `EventSeriesEntityConnectionDto` (both exported from the models index).
+
 ## [2.3.0] - 2026-03-02
 
 ### Added

@@ -7,6 +7,7 @@ import type {
   CreateGroupDto,
   EntityConnectionDto,
   EventEntityConnectionDto,
+  EventSeriesEntityConnectionDto,
   GroupDto,
   UpdateGroupDto,
   UserEntityConnectionDto,
@@ -295,5 +296,9 @@ export class EnhancedGroupApi {
     requesterUserId?: string
   ): Promise<EventEntityConnectionDto[]> {
     return unwrap(this.api.getEvents(groupId, from, to, requesterUserId));
+  }
+
+  async getGroupEventSeries(groupId: string): Promise<EventSeriesEntityConnectionDto[]> {
+    return unwrap(this.api.getEventSeries(groupId));
   }
 }

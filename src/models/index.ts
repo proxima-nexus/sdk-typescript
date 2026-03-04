@@ -6,6 +6,8 @@ export * from './entity-connection-dto';
 export * from './event-dto';
 export * from './event-entity-connection-dto';
 export * from './event-series-dto';
+export * from './event-series-entity-connection-dto';
+export * from './get-event-series-dto';
 export * from './get-events-dto';
 export * from './get-groups-dto';
 export * from './get-users-dto';

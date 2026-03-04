@@ -3,6 +3,7 @@ import type {
     CreateEventSeriesDto,
     EventSeriesDto,
     EventDto,
+    GetEventSeriesDto,
     UpdateEventSeriesDto,
 } from '../models';
 import { unwrap } from './errors';
@@ -35,5 +36,9 @@ export class EnhancedEventSeriesApi {
 
     async getInstances(seriesId: string, from?: string, to?: string): Promise<EventDto[]> {
         return unwrap(this.api.getInstances(seriesId, from, to));
+    }
+
+    async getBatch(seriesIds: string[]): Promise<EventSeriesDto[]> {
+        return unwrap(this.api.getBatch({ seriesIds }));
     }
 }
