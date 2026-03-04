@@ -235,6 +235,16 @@ export class EnhancedGroupApi {
     userId: string,
     requesterUserId: string
   ): Promise<EntityConnectionDto> {
+    // Remove any existing connection
+    await unwrap(
+      this.api.removeConnection(
+        groupId,
+        userId,
+        requesterUserId,
+        { type: MutateGroupEntityConnectionDtoTypeEnum.member }
+      )
+    );
+    // Create a new admin connection
     return unwrap(
       this.api.addConnection(
         groupId,
@@ -250,7 +260,17 @@ export class EnhancedGroupApi {
     userId: string,
     requesterUserId: string
   ): Promise<EntityConnectionDto> {
-    return unwrap(
+    // Remove any existing connection
+    await unwrap(
+      this.api.removeConnection(
+        groupId,
+        userId,
+        requesterUserId,
+        { type: MutateGroupEntityConnectionDtoTypeEnum.admin }
+      )
+    );
+    // Create a new member connection
+    return await unwrap(
       this.api.addConnection(
         groupId,
         userId,
