@@ -277,11 +277,13 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
          * @param {string} userId 
          * @param {string} [from] ISO 8601 start of range (events ending after this time). Default: NOW()
          * @param {string} [to] ISO 8601 end of range (events starting before this time)
+         * @param {string} [latitude] Requester latitude for nearby event discovery
+         * @param {string} [longitude] Requester longitude for nearby event discovery
          * @param {string} [xProximaNexusRequesterUserId] ID of the user getting events of a user. If set, events will be filtered to only include events that the user can see, and requesterConnection will be set on the results.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getEvents: async (userId: string, from?: string, to?: string, xProximaNexusRequesterUserId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getEvents: async (userId: string, from?: string, to?: string, latitude?: string, longitude?: string, xProximaNexusRequesterUserId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'userId' is not null or undefined
             assertParamExists('getEvents', 'userId', userId)
             const localVarPath = `/user/{userId}/events`
@@ -308,6 +310,14 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
                 localVarQueryParameter['to'] = to;
             }
 
+            if (latitude !== undefined) {
+                localVarQueryParameter['latitude'] = latitude;
+            }
+
+            if (longitude !== undefined) {
+                localVarQueryParameter['longitude'] = longitude;
+            }
+
             localVarHeaderParameter['Accept'] = 'application/json';
 
             if (xProximaNexusRequesterUserId != null) {
@@ -326,11 +336,13 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
          * 
          * @summary Get groups of a user
          * @param {string} userId 
+         * @param {string} [latitude] Requester latitude for nearby group discovery
+         * @param {string} [longitude] Requester longitude for nearby group discovery
          * @param {string} [xProximaNexusRequesterUserId] ID of the user getting groups of a user. If set, groups will be filtered to only include groups that the user can see, and requesterConnection will be set on the results.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getGroups: async (userId: string, xProximaNexusRequesterUserId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getGroups: async (userId: string, latitude?: string, longitude?: string, xProximaNexusRequesterUserId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'userId' is not null or undefined
             assertParamExists('getGroups', 'userId', userId)
             const localVarPath = `/user/{userId}/groups`
@@ -348,6 +360,14 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
 
             // authentication api_key required
             await setApiKeyToObject(localVarHeaderParameter, "X-Proxima-Nexus-Api-Key", configuration)
+
+            if (latitude !== undefined) {
+                localVarQueryParameter['latitude'] = latitude;
+            }
+
+            if (longitude !== undefined) {
+                localVarQueryParameter['longitude'] = longitude;
+            }
 
             localVarHeaderParameter['Accept'] = 'application/json';
 
@@ -685,12 +705,14 @@ export const UserApiFp = function(configuration?: Configuration) {
          * @param {string} userId 
          * @param {string} [from] ISO 8601 start of range (events ending after this time). Default: NOW()
          * @param {string} [to] ISO 8601 end of range (events starting before this time)
+         * @param {string} [latitude] Requester latitude for nearby event discovery
+         * @param {string} [longitude] Requester longitude for nearby event discovery
          * @param {string} [xProximaNexusRequesterUserId] ID of the user getting events of a user. If set, events will be filtered to only include events that the user can see, and requesterConnection will be set on the results.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getEvents(userId: string, from?: string, to?: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<EventEntityConnectionDto>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getEvents(userId, from, to, xProximaNexusRequesterUserId, options);
+        async getEvents(userId: string, from?: string, to?: string, latitude?: string, longitude?: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<EventEntityConnectionDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getEvents(userId, from, to, latitude, longitude, xProximaNexusRequesterUserId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['UserApi.getEvents']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -699,12 +721,14 @@ export const UserApiFp = function(configuration?: Configuration) {
          * 
          * @summary Get groups of a user
          * @param {string} userId 
+         * @param {string} [latitude] Requester latitude for nearby group discovery
+         * @param {string} [longitude] Requester longitude for nearby group discovery
          * @param {string} [xProximaNexusRequesterUserId] ID of the user getting groups of a user. If set, groups will be filtered to only include groups that the user can see, and requesterConnection will be set on the results.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getGroups(userId: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<GroupEntityConnectionDto>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getGroups(userId, xProximaNexusRequesterUserId, options);
+        async getGroups(userId: string, latitude?: string, longitude?: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<GroupEntityConnectionDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getGroups(userId, latitude, longitude, xProximaNexusRequesterUserId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['UserApi.getGroups']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -851,23 +875,27 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
          * @param {string} userId 
          * @param {string} [from] ISO 8601 start of range (events ending after this time). Default: NOW()
          * @param {string} [to] ISO 8601 end of range (events starting before this time)
+         * @param {string} [latitude] Requester latitude for nearby event discovery
+         * @param {string} [longitude] Requester longitude for nearby event discovery
          * @param {string} [xProximaNexusRequesterUserId] ID of the user getting events of a user. If set, events will be filtered to only include events that the user can see, and requesterConnection will be set on the results.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getEvents(userId: string, from?: string, to?: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<EventEntityConnectionDto>> {
-            return localVarFp.getEvents(userId, from, to, xProximaNexusRequesterUserId, options).then((request) => request(axios, basePath));
+        getEvents(userId: string, from?: string, to?: string, latitude?: string, longitude?: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<EventEntityConnectionDto>> {
+            return localVarFp.getEvents(userId, from, to, latitude, longitude, xProximaNexusRequesterUserId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
          * @summary Get groups of a user
          * @param {string} userId 
+         * @param {string} [latitude] Requester latitude for nearby group discovery
+         * @param {string} [longitude] Requester longitude for nearby group discovery
          * @param {string} [xProximaNexusRequesterUserId] ID of the user getting groups of a user. If set, groups will be filtered to only include groups that the user can see, and requesterConnection will be set on the results.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getGroups(userId: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<GroupEntityConnectionDto>> {
-            return localVarFp.getGroups(userId, xProximaNexusRequesterUserId, options).then((request) => request(axios, basePath));
+        getGroups(userId: string, latitude?: string, longitude?: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<GroupEntityConnectionDto>> {
+            return localVarFp.getGroups(userId, latitude, longitude, xProximaNexusRequesterUserId, options).then((request) => request(axios, basePath));
         },
         /**
          * Create a friend request, accept a pending request, or block a user. For FRIEND type: creates REQUESTED state if no connection exists; target user can accept by setting state to ACTIVE. For BLOCKED type: creates a mutual block.
@@ -992,21 +1020,25 @@ export interface UserApiInterface {
      * @param {string} userId 
      * @param {string} [from] ISO 8601 start of range (events ending after this time). Default: NOW()
      * @param {string} [to] ISO 8601 end of range (events starting before this time)
+     * @param {string} [latitude] Requester latitude for nearby event discovery
+     * @param {string} [longitude] Requester longitude for nearby event discovery
      * @param {string} [xProximaNexusRequesterUserId] ID of the user getting events of a user. If set, events will be filtered to only include events that the user can see, and requesterConnection will be set on the results.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getEvents(userId: string, from?: string, to?: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<EventEntityConnectionDto>>;
+    getEvents(userId: string, from?: string, to?: string, latitude?: string, longitude?: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<EventEntityConnectionDto>>;
 
     /**
      * 
      * @summary Get groups of a user
      * @param {string} userId 
+     * @param {string} [latitude] Requester latitude for nearby group discovery
+     * @param {string} [longitude] Requester longitude for nearby group discovery
      * @param {string} [xProximaNexusRequesterUserId] ID of the user getting groups of a user. If set, groups will be filtered to only include groups that the user can see, and requesterConnection will be set on the results.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getGroups(userId: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<GroupEntityConnectionDto>>;
+    getGroups(userId: string, latitude?: string, longitude?: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<GroupEntityConnectionDto>>;
 
     /**
      * Create a friend request, accept a pending request, or block a user. For FRIEND type: creates REQUESTED state if no connection exists; target user can accept by setting state to ACTIVE. For BLOCKED type: creates a mutual block.
@@ -1136,24 +1168,28 @@ export class UserApi extends BaseAPI implements UserApiInterface {
      * @param {string} userId 
      * @param {string} [from] ISO 8601 start of range (events ending after this time). Default: NOW()
      * @param {string} [to] ISO 8601 end of range (events starting before this time)
+     * @param {string} [latitude] Requester latitude for nearby event discovery
+     * @param {string} [longitude] Requester longitude for nearby event discovery
      * @param {string} [xProximaNexusRequesterUserId] ID of the user getting events of a user. If set, events will be filtered to only include events that the user can see, and requesterConnection will be set on the results.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public getEvents(userId: string, from?: string, to?: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig) {
-        return UserApiFp(this.configuration).getEvents(userId, from, to, xProximaNexusRequesterUserId, options).then((request) => request(this.axios, this.basePath));
+    public getEvents(userId: string, from?: string, to?: string, latitude?: string, longitude?: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig) {
+        return UserApiFp(this.configuration).getEvents(userId, from, to, latitude, longitude, xProximaNexusRequesterUserId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
      * @summary Get groups of a user
      * @param {string} userId 
+     * @param {string} [latitude] Requester latitude for nearby group discovery
+     * @param {string} [longitude] Requester longitude for nearby group discovery
      * @param {string} [xProximaNexusRequesterUserId] ID of the user getting groups of a user. If set, groups will be filtered to only include groups that the user can see, and requesterConnection will be set on the results.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public getGroups(userId: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig) {
-        return UserApiFp(this.configuration).getGroups(userId, xProximaNexusRequesterUserId, options).then((request) => request(this.axios, this.basePath));
+    public getGroups(userId: string, latitude?: string, longitude?: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig) {
+        return UserApiFp(this.configuration).getGroups(userId, latitude, longitude, xProximaNexusRequesterUserId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

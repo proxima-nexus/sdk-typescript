@@ -1224,5 +1224,6 @@ export enum GroupControllerGetConnectionsStateEnum {
 export enum GroupControllerGetConnectionsTypeEnum {
     member = 'member',
     admin = 'admin',
-    owner = 'owner'
+    owner = 'owner',
+    nearby = 'nearby'
 }

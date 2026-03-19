@@ -38,6 +38,7 @@ export enum EntityConnectionDtoTypeEnum {
     admin = 'admin',
     owner = 'owner',
     associated_group = 'associated_group',
+    nearby = 'nearby',
     member = 'member',
     friend = 'friend',
     blocked = 'blocked',

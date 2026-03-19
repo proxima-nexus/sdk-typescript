@@ -24,7 +24,8 @@ export interface MutateGroupEntityConnectionDto {
 export enum MutateGroupEntityConnectionDtoTypeEnum {
     member = 'member',
     admin = 'admin',
-    owner = 'owner'
+    owner = 'owner',
+    nearby = 'nearby'
 }
 
 

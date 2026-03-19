@@ -246,15 +246,29 @@ export class EnhancedUserApi {
     userId: string,
     from?: string,
     to?: string,
-    requesterUserId?: string
+    requesterUserId?: string,
+    latitude?: number,
+    longitude?: number
   ): Promise<EventEntityConnectionDto[]> {
-    return unwrap(this.api.getEvents(userId, from, to, requesterUserId));
+    return unwrap(this.api.getEvents(
+      userId, from, to,
+      latitude !== undefined ? String(latitude) : undefined,
+      longitude !== undefined ? String(longitude) : undefined,
+      requesterUserId,
+    ));
   }
 
   async getGroups(
     userId: string,
-    requesterUserId?: string
+    requesterUserId?: string,
+    latitude?: number,
+    longitude?: number
   ): Promise<GroupEntityConnectionDto[]> {
-    return unwrap(this.api.getGroups(userId, requesterUserId));
+    return unwrap(this.api.getGroups(
+      userId,
+      latitude !== undefined ? String(latitude) : undefined,
+      longitude !== undefined ? String(longitude) : undefined,
+      requesterUserId,
+    ));
   }
 }

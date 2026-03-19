@@ -205,7 +205,10 @@ export class EnhancedGroupApi {
     return unwrap(
       this.api.getConnections(
         groupId,
-        [GroupControllerGetConnectionsStateEnum.active],
+        [
+          GroupControllerGetConnectionsStateEnum.active,
+          GroupControllerGetConnectionsStateEnum.requested,
+        ],
         [
           GroupControllerGetConnectionsTypeEnum.member,
           GroupControllerGetConnectionsTypeEnum.admin,
