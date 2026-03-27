@@ -143,12 +143,20 @@ export class EnhancedGroupApi {
   }
 
   async leaveGroup(groupId: string, userId: string): Promise<void> {
-    return unwrap(
+    await unwrap(
       this.api.removeConnection(
         groupId,
         userId,
         userId,
         { type: MutateGroupEntityConnectionDtoTypeEnum.member }
+      )
+    );
+    await unwrap(
+      this.api.removeConnection(
+        groupId,
+        userId,
+        userId,
+        { type: MutateGroupEntityConnectionDtoTypeEnum.admin }
       )
     );
   }
