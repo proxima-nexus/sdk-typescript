@@ -85,6 +85,14 @@ export interface EventDto {
      * ID of the event series this instance belongs to, if any
      */
     'seriesId'?: string;
+    /**
+     * Registration fee amount in minor units (e.g. cents)
+     */
+    'registrationFeeAmount'?: number;
+    /**
+     * ISO 4217 currency code, lowercase (e.g. eur)
+     */
+    'registrationFeeCurrency'?: string;
 }
 
 export enum EventDtoVisibilityEnum {

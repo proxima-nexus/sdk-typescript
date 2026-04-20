@@ -89,6 +89,14 @@ export interface EventSeriesDto {
      * Maximum number of attendees per event instance
      */
     'maxNumAttendees'?: number;
+    /**
+     * Registration fee amount in minor units (e.g. cents)
+     */
+    'registrationFeeAmount'?: number;
+    /**
+     * ISO 4217 currency code, lowercase (e.g. eur)
+     */
+    'registrationFeeCurrency'?: string;
 }
 
 export enum EventSeriesDtoVisibilityEnum {

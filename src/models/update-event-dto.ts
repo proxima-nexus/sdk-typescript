@@ -54,6 +54,14 @@ export interface UpdateEventDto {
      * Maximum number of attendees allowed (null = unlimited)
      */
     'maxNumAttendees'?: number;
+    /**
+     * Registration fee amount in minor units (e.g. cents). Set to null to remove the fee.
+     */
+    'registrationFeeAmount'?: object;
+    /**
+     * ISO 4217 currency code, lowercase (e.g. eur). Set to null to remove the fee.
+     */
+    'registrationFeeCurrency'?: object;
 }
 
 export enum UpdateEventDtoVisibilityEnum {
