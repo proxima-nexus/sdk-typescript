@@ -5,6 +5,13 @@ All notable changes to the Proxima Nexus TypeScript SDK are documented in this f
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.5.0] - 2026-05-23
+
+### Added
+
+- `UpdateEventSeriesDto` now exposes optional `instanceStartTime`, `instanceEndTime`, and `timezone` properties, enabling callers to mutate the wall-clock and zone of an event series. Server-side, changing any of these triggers regeneration of upcoming event instances.
+- Tracks `@proxima-nexus/openapi@^2.4.0`.
+
 ## [2.4.3] - 2026-03-19
 
 ### Added

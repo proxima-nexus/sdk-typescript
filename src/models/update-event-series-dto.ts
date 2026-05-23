@@ -54,6 +54,18 @@ export interface UpdateEventSeriesDto {
      * ISO 4217 currency code, lowercase (e.g. eur). Set to null to remove the fee.
      */
     'registrationFeeCurrency'?: object;
+    /**
+     * Start time of each instance in HH:MM format (local time in the given timezone). Changing this regenerates upcoming instances.
+     */
+    'instanceStartTime'?: string;
+    /**
+     * End time of each instance in HH:MM format (local time in the given timezone). Changing this regenerates upcoming instances.
+     */
+    'instanceEndTime'?: string;
+    /**
+     * IANA timezone for interpreting times and generating instances. Changing this regenerates upcoming instances.
+     */
+    'timezone'?: string;
 }
 
 export enum UpdateEventSeriesDtoVisibilityEnum {
