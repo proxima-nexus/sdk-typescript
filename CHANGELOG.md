@@ -5,6 +5,13 @@ All notable changes to the Proxima Nexus TypeScript SDK are documented in this f
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.7.0] - 2026-08-12
+
+### Added
+
+- `GroupApi.transferOwnership(groupId, userId, requesterUserId)` and the enhanced `groups.transferOwnership(groupId, newOwnerUserId, requesterUserId)` wrapper for `PUT /group/{groupId}/owner/{userId}` — transfers ownership to an existing admin and demotes the current owner to admin.
+- Tracks `@proxima-nexus/openapi@^2.6.0`.
+
 ## [2.6.0] - 2026-08-12
 
 ### Added

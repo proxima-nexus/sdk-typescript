@@ -548,6 +548,52 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
             };
         },
         /**
+         * Transfers ownership to :userId (who must already be an active admin) and demotes the current owner to admin. Only the current owner may perform this.
+         * @summary Transfer group ownership to an admin
+         * @param {string} groupId 
+         * @param {string} userId 
+         * @param {string} xProximaNexusRequesterUserId ID of the current owner transferring ownership
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        transferOwnership: async (groupId: string, userId: string, xProximaNexusRequesterUserId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'groupId' is not null or undefined
+            assertParamExists('transferOwnership', 'groupId', groupId)
+            // verify required parameter 'userId' is not null or undefined
+            assertParamExists('transferOwnership', 'userId', userId)
+            // verify required parameter 'xProximaNexusRequesterUserId' is not null or undefined
+            assertParamExists('transferOwnership', 'xProximaNexusRequesterUserId', xProximaNexusRequesterUserId)
+            const localVarPath = `/group/{groupId}/owner/{userId}`
+                .replace(`{${"groupId"}}`, encodeURIComponent(String(groupId)))
+                .replace(`{${"userId"}}`, encodeURIComponent(String(userId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication api_key required
+            await setApiKeyToObject(localVarHeaderParameter, "X-Proxima-Nexus-Api-Key", configuration)
+
+
+            if (xProximaNexusRequesterUserId != null) {
+                localVarHeaderParameter['X-Proxima-Nexus-Requester-User-Id'] = String(xProximaNexusRequesterUserId);
+            }
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * 
          * @summary Update a group
          * @param {string} groupId 
@@ -762,6 +808,21 @@ export const GroupApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
+         * Transfers ownership to :userId (who must already be an active admin) and demotes the current owner to admin. Only the current owner may perform this.
+         * @summary Transfer group ownership to an admin
+         * @param {string} groupId 
+         * @param {string} userId 
+         * @param {string} xProximaNexusRequesterUserId ID of the current owner transferring ownership
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async transferOwnership(groupId: string, userId: string, xProximaNexusRequesterUserId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.transferOwnership(groupId, userId, xProximaNexusRequesterUserId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GroupApi.transferOwnership']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
          * 
          * @summary Update a group
          * @param {string} groupId 
@@ -913,6 +974,18 @@ export const GroupApiFactory = function (configuration?: Configuration, basePath
             return localVarFp.search(displayName, latitude, longitude, radius, minLatitude, maxLatitude, minLongitude, maxLongitude, limit, from, to, xProximaNexusRequesterUserId, options).then((request) => request(axios, basePath));
         },
         /**
+         * Transfers ownership to :userId (who must already be an active admin) and demotes the current owner to admin. Only the current owner may perform this.
+         * @summary Transfer group ownership to an admin
+         * @param {string} groupId 
+         * @param {string} userId 
+         * @param {string} xProximaNexusRequesterUserId ID of the current owner transferring ownership
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        transferOwnership(groupId: string, userId: string, xProximaNexusRequesterUserId: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.transferOwnership(groupId, userId, xProximaNexusRequesterUserId, options).then((request) => request(axios, basePath));
+        },
+        /**
          * 
          * @summary Update a group
          * @param {string} groupId 
@@ -1047,6 +1120,17 @@ export interface GroupApiInterface {
      * @throws {RequiredError}
      */
     search(displayName?: string, latitude?: number, longitude?: number, radius?: number, minLatitude?: number, maxLatitude?: number, minLongitude?: number, maxLongitude?: number, limit?: number, from?: string, to?: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<GroupDto>>;
+
+    /**
+     * Transfers ownership to :userId (who must already be an active admin) and demotes the current owner to admin. Only the current owner may perform this.
+     * @summary Transfer group ownership to an admin
+     * @param {string} groupId 
+     * @param {string} userId 
+     * @param {string} xProximaNexusRequesterUserId ID of the current owner transferring ownership
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    transferOwnership(groupId: string, userId: string, xProximaNexusRequesterUserId: string, options?: RawAxiosRequestConfig): AxiosPromise<void>;
 
     /**
      * 
@@ -1200,6 +1284,19 @@ export class GroupApi extends BaseAPI implements GroupApiInterface {
      */
     public search(displayName?: string, latitude?: number, longitude?: number, radius?: number, minLatitude?: number, maxLatitude?: number, minLongitude?: number, maxLongitude?: number, limit?: number, from?: string, to?: string, xProximaNexusRequesterUserId?: string, options?: RawAxiosRequestConfig) {
         return GroupApiFp(this.configuration).search(displayName, latitude, longitude, radius, minLatitude, maxLatitude, minLongitude, maxLongitude, limit, from, to, xProximaNexusRequesterUserId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Transfers ownership to :userId (who must already be an active admin) and demotes the current owner to admin. Only the current owner may perform this.
+     * @summary Transfer group ownership to an admin
+     * @param {string} groupId 
+     * @param {string} userId 
+     * @param {string} xProximaNexusRequesterUserId ID of the current owner transferring ownership
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public transferOwnership(groupId: string, userId: string, xProximaNexusRequesterUserId: string, options?: RawAxiosRequestConfig) {
+        return GroupApiFp(this.configuration).transferOwnership(groupId, userId, xProximaNexusRequesterUserId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

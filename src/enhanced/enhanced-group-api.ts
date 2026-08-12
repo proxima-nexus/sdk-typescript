@@ -291,6 +291,18 @@ export class EnhancedGroupApi {
     );
   }
 
+  // Transfer ownership to an existing admin. The server performs the atomic
+  // owner<->admin swap; the outgoing owner (requesterUserId) becomes an admin.
+  async transferOwnership(
+    groupId: string,
+    newOwnerUserId: string,
+    requesterUserId: string
+  ): Promise<void> {
+    await unwrap(
+      this.api.transferOwnership(groupId, newOwnerUserId, requesterUserId)
+    );
+  }
+
   async getAdmins(
     groupId: string,
     requesterUserId?: string
