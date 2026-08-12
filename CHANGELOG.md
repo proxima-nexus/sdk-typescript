@@ -5,6 +5,13 @@ All notable changes to the Proxima Nexus TypeScript SDK are documented in this f
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.6.0] - 2026-08-12
+
+### Added
+
+- `UpdateEventSeriesDto` now exposes optional `seriesEndDate` (YYYY-MM-DD), enabling callers to extend an event series' end date. It may only be moved later; the server appends the new upcoming instances up to the new end without disturbing existing ones and rejects an earlier date.
+- Tracks `@proxima-nexus/openapi@^2.5.0`.
+
 ## [2.5.0] - 2026-05-23
 
 ### Added

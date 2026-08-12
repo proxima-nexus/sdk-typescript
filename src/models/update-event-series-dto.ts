@@ -66,6 +66,10 @@ export interface UpdateEventSeriesDto {
      * IANA timezone for interpreting times and generating instances. Changing this regenerates upcoming instances.
      */
     'timezone'?: string;
+    /**
+     * New end date for the series (YYYY-MM-DD). May only be moved later; extending appends new upcoming instances up to the new end without disturbing existing ones. Moving it earlier is rejected.
+     */
+    'seriesEndDate'?: string;
 }
 
 export enum UpdateEventSeriesDtoVisibilityEnum {
